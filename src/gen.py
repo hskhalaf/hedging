@@ -20,7 +20,6 @@ def make_prompt(post: str) -> str:
     return "\n".join(blocks)
 
 
-
 def main(args):
     model_name = args.model_name
     n_trials = args.n_trials

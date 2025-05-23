@@ -8,9 +8,9 @@ torch.set_default_dtype(torch.float32)
 DEVICE = "mps" if torch.backends.mps.is_available() else "cpu"
 FILE = "data/candidates_results.json"
 CACHE = FILE + ".metrics.npz"
-LAMBDAS = np.linspace(0, 20, 300, dtype=np.float32)
+LAMBDAS = np.linspace(0, 20, 150, dtype=np.float32)
 MU_VALUES = np.linspace(0, 50, 250, dtype=np.float32)
-BOOTSTR = 500
+BOOTSTR = 300
 zcrit = 1.96
 PEAK_MIN, PEAK_MAX, PEAK_STEP = 80, 99, 5
 PEAK_VALUES = np.arange(PEAK_MIN, PEAK_MAX + 1, PEAK_STEP)
@@ -49,7 +49,7 @@ if len(N_SIZES_valid) == 0:
 
 with open(FILE, "r") as f:
     obj = json.load(f)
-scores_np_orig = {"train": np.asarray(obj[0]["scores_2b"], dtype=np.float32)}
+scores_np_orig = {"train": np.asarray(obj[0]["scores_1b"], dtype=np.float32)}
 train_np_orig = scores_np_orig["train"]
 n_total = len(train_np_orig)
 if n_total == 0:
@@ -90,21 +90,7 @@ def calculate_all_probs_for_peak(pctl_peak_value):
         gold_n = val_full_current[idx]
         picks = proxy_n.argmax(dim=1)
         return gold_n[torch.arange(BOOTSTR, device=DEVICE), picks].mean().item()
-    def tune_n_for_gold(g, n_min, n_max):
-        lo, hi = n_min, n_max
-        if Eg_BoN_sim(lo) >= g:
-            return lo
-        if Eg_BoN_sim(hi) < g:
-            return hi
-        while lo < hi:
-            mid = (lo + hi) // 2
-            if Eg_BoN_sim(mid) >= g:
-                hi = mid
-            else:
-                lo = mid + 1
-        return lo
-    gold_matrix = val_full_current[full_paths]
-    n_star = [[tune_n_for_gold(float(g), 2, Nmax_actual) for g in row] for row in gold_matrix]
+
     _prob_train = np.zeros((L + 1, J), np.float32)
     _prob_val = np.zeros((L + 1, J), np.float32)
     dev_calc = DEVICE
@@ -171,7 +157,7 @@ def calculate_all_probs_for_peak(pctl_peak_value):
     _se_val = np.sqrt(_prob_val * (1 - _prob_val) / BOOTSTR)
     _ci_hw_t = zcrit * np.nan_to_num(_se_train)
     _ci_hw_v = zcrit * np.nan_to_num(_se_val)
-    return _prob_train, _prob_val, _ci_hw_t, _ci_hw_v, _prob_train_pois, _prob_val_pois, n_star
+    return _prob_train, _prob_val, _ci_hw_t, _ci_hw_v, _prob_train_pois, _prob_val_pois
 
 for peak_val in tqdm(PEAK_VALUES, desc="Peak Pctl Pre-calculation"):
     results_cache[peak_val] = calculate_all_probs_for_peak(peak_val)
@@ -183,7 +169,7 @@ P, N = len(PEAK_VALUES), len(N_SIZES_valid)
 deltaP_pct_all = np.zeros((P, N), dtype=np.float32)
 ci_delta_pct_all = np.zeros((P, N), dtype=np.float32)
 for i, peak in enumerate(PEAK_VALUES):
-    prob_train, prob_val, ci_hw_t, ci_hw_v, train_pois, val_pois, _ = results_cache[peak]
+    prob_train, prob_val, ci_hw_t, ci_hw_v, train_pois, val_pois = results_cache[peak]
     soft_val = prob_val[:-1, valid_plot_indices_n]
     ci_soft = ci_hw_v[:-1, valid_plot_indices_n]
     bon_val = prob_val[-1, valid_plot_indices_n]
@@ -222,17 +208,12 @@ for c, (_, (prob_train, prob_val, _, _, train_pois, val_pois, _)) in zip(colors,
     label_vb = "True Reward (BoN)" if first else "_nolegend_"
     ax2.plot(MU_VALUES, train_pois, linestyle=(0, (1, 1)), color=c, label=label_tp, alpha=0.5)
     ax2.plot(MU_VALUES, val_pois, linestyle='-', color=c, label=label_vp, alpha=0.5)
-    imax = val_pois.argmax()
-    ax2.scatter(MU_VALUES[imax], val_pois[imax], marker='*', s=120, color='blue', edgecolor='black', alpha=0.6, zorder=10, label = "BoP (Opt)")
-
     fixed_train = prob_train[-1, valid_plot_indices_n]
     fixed_val = prob_val[-1, valid_plot_indices_n]
     n_vals = N_SIZES_valid.astype(float)
     mask = n_vals <= threshold_n
     ax2.scatter(n_vals[mask], fixed_train[mask], marker="x", s=50, color=c, label=label_tb)
     ax2.scatter(n_vals[mask], fixed_val[mask], marker="o", s=50, color=c, label=label_vb)
-    imax = fixed_val[mask].argmax()
-    ax2.scatter(n_vals[mask][imax], fixed_val[mask][imax], marker='*', s=120, color='yellow', edgecolor='black', zorder=10, alpha=0.6,  label = "BoN (Opt)")
     first = False
 ax2.set_xlabel("Average number of samples n")
 ax2.set_ylabel("Reward Improvement over Base Distribution (%)")
