@@ -4,7 +4,8 @@ from scipy.optimize import brentq
 
 dir_path = os.path.join(os.getcwd(), "converts")
 SIZE = "80k"
-files = sorted(f for f in os.listdir(dir_path) if f.endswith(".npz") and "25" in f and (SIZE in f))
+FLIP = "25"
+files = sorted(f for f in os.listdir(dir_path) if f.endswith(".npz") and FLIP in f and (SIZE in f))
 K, M = 800, 1200
 default_NS = np.arange(1, 40)
 max_n = int(default_NS.max())
@@ -108,8 +109,6 @@ for fi in range(F):
     ax.scatter(default_NS, curves[li0, fi], marker='o', s=40, alpha=0.5, color=colors[fi])
     ax.plot(default_NS, curves[:, fi, :].max(axis=0), '--', linewidth=2, alpha=0.7, color=colors[fi])
     ax.plot(mu_vals + 1, avg_gold[:, fi], '-', linewidth=2, alpha=1, color=colors[fi])
-    n_star_int = int(best_n_star[fi]) if not np.isnan(best_n_star[fi]) and 1 <= best_n_star[fi] <= max_n else default_NS[curves[li0, fi].argmax()]
-    bon_y = curves[li0, fi, n_star_int - 1]
 
 ax.set_xlabel("Number of samples $n$", fontsize=15)
 ax.set_ylabel("Expected true reward", fontsize=15)
@@ -146,7 +145,7 @@ leg = ax.legend(
     frameon=True
 )
 fig.savefig(
-    os.path.join(dir_path, f"{SIZE}.pdf"),
+    os.path.join(dir_path, f"{SIZE}_{FLIP}.pdf"),
     bbox_inches='tight',
     pad_inches=0.1,
     bbox_extra_artists=[leg]
