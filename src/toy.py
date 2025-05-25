@@ -16,7 +16,7 @@ r = lambda x: x
 TAU_GRID      = np.linspace(0.0, 300.0, 800)
 N_LIST        = np.array([2, 4, 8, 16, 32, 64, 128])
 LAMBDA_GRID   = np.logspace(-4, 4, 600)
-M_MC          = 120_000
+M_MC          = 100_000
 
 def Z(lmb):
     return si.quad(lambda x: np.exp(lmb * g(x)), 0.0, 1.0, limit=200)[0]
@@ -47,16 +47,15 @@ def KL_BoN(n):
 Eg_n = np.array([Eg_BoN(n) for n in N_LIST])
 KL_n = np.array([KL_BoN(n) for n in N_LIST])
 
-def softbon_mc(n, tau_grid, m=M_MC):
+def softbon_mc(n, lambda_grid, m=M_MC):
     proxy_samples = rng.random((m, n))
     gold_samples  = g(proxy_samples)
     result_Eg = []
     result_KL = []
     bins      = np.linspace(0.0, 1.0, 501)
     bw        = bins[1] - bins[0]
-
-    for tau in tau_grid:
-        logits  = proxy_samples / tau
+    for lam in lambda_grid:
+        logits  = proxy_samples * lam
         gumbels = -np.log(-np.log(rng.random(logits.shape)))
         idx     = np.argmax(logits + gumbels, axis=1)
         chosen_g = gold_samples[np.arange(m), idx]
@@ -65,7 +64,6 @@ def softbon_mc(n, tau_grid, m=M_MC):
         q_pdf     = hist / (m * bw)
         q_pdf     = q_pdf[q_pdf > 0]
         result_KL.append(np.sum(q_pdf * np.log(q_pdf)) * bw)
-
     return np.array(result_KL), np.array(result_Eg)
 
 softbon_curves = {n: softbon_mc(n, LAMBDA_GRID) for n in N_LIST}
@@ -106,51 +104,55 @@ def KL_proxy_tilt(lmb, Zp=None):
 Eg_proxy_vals = np.array([Eg_proxy_tilt(l) for l in TAU_GRID])
 KL_proxy_vals = np.array([KL_proxy_tilt(l) for l in TAU_GRID])
 
-from scipy.special import factorial
+from scipy.optimize import brentq
 
-from scipy.special import gamma, gammainc
+def hedge_tune(r_t, method, theta_min, theta_max, n=None, M=1000, tol=1e-6, grid_size=41, rng=None):
+    if rng is None:
+        rng = np.random.default_rng()
 
-def hedge_tune(r_t, method, theta_min, theta_max, n=None, M=5000, tol=1e-6):
-    u  = np.linspace(1e-8, 1-1e-8, M)
-    du = u[1] - u[0]
+    def R_SBoN(lam):
+        U = rng.random((M, n))
+        A = lam * U
+        A = A - A.max(axis=1, keepdims=True)
+        W = np.exp(A)
+        P = W / W.sum(axis=1, keepdims=True)
+        xi = rng.random((M, 1))
+        cum = P.cumsum(axis=1)
+        idx = (cum > xi).argmax(axis=1)
+        u_sel = U[np.arange(M), idx]
+        r_sel = r_t(u_sel)
+        return (r_sel * u_sel).mean() - r_sel.mean() * u_sel.mean()
 
-    def R(theta):
+    grid_u = np.linspace(1e-8, 1-1e-8, M)
+    du = grid_u[1] - grid_u[0]
+
+    def R_other(theta):
         if method == 'BoN':
-            s = 1/theta + np.log(u)
-            p = u**(theta-1)
-
-        elif method == 'SBoN':
-            if theta == 0:
-                Z   = 1.0/n
-                E_u = n/(n+1)
-            else:
-                inc_n  = gamma(n)*gammainc(n, theta)
-                inc_n1 = gamma(n+1)*gammainc(n+1, theta)
-                Z      = inc_n/theta**n
-                E_u    = inc_n1/(theta*inc_n)
-            s = u - E_u
-            p = u**(n-1)*np.exp(theta*u)/Z
-
-        else:  # BoP
-            q0 = (theta*u + 1)*np.exp(theta*(1-u))
-            Zp = 1.0 if theta == 0 else (2*np.exp(theta)-(theta+2))/theta
-            p  = q0/Zp
-            s  = u + (u-1)/(theta*u+1)
-
-        return np.sum(r_t(u)*s*p)*du
+            s = 1/theta + np.log(grid_u)
+            p = grid_u**(theta-1)
+        if method == 'BoP':
+            s = grid_u - 1 + (grid_u)/(theta*grid_u+1)
+            p = (theta*grid_u+1) * np.exp(-theta*(1-grid_u))
+        return np.sum(r_t(grid_u) * s * p) * du
 
     if method == 'SBoN':
-        Rvals = np.array([R(t) for t in LAMBDA_GRID])
-        mask  = np.isfinite(Rvals)
-        idx   = np.where((Rvals[:-1]*Rvals[1:]<=0)&mask[:-1]&mask[1:])[0]
-        if not len(idx): return np.nan
-        a, b = LAMBDA_GRID[idx[0]], LAMBDA_GRID[idx[0]+1]
+        R = R_SBoN
+        tau = np.linspace(theta_min, theta_max, grid_size)
+        Rvals = np.array([R(t) for t in tau])
+        signs = np.sign(Rvals)
+        idx = np.where(signs[:-1] * signs[1:] <= 0)[0]
+        if len(idx) == 0:
+            best = np.argmin(np.abs(Rvals))
+            return np.inf if best == len(tau)-1 else float(tau[best])
+        a, b = tau[idx[0]], tau[idx[0]+1]
     else:
+        R = R_other
         a, b = theta_min, theta_max
         fa, fb = R(a), R(b)
         for _ in range(100):
-            if fa*fb <= 0: break
-            a /= 2; b *= 2
+            if fa * fb <= 0:
+                break
+            a *= 0.5; b *= 2
             fa, fb = R(a), R(b)
         else:
             return np.nan
@@ -163,11 +165,11 @@ theta_bon = hedge_tune(g, 'BoN', 2, 128)
 klb, ebo  = KL_BoN(theta_bon), Eg_BoN(theta_bon)
 
 theta_bop = hedge_tune(g, 'BoP', TAU_GRID[0], TAU_GRID[-1])
-klp, ebp  = KL_BoP(theta_bon), Eg_BoP(theta_bon)
-
+klp, ebp  = KL_BoP(theta_bop), Eg_BoP(theta_bop)
 print(f"BoN: {theta_bon}, BoP: {theta_bop}")
+
 sns.set_theme(style="whitegrid",palette="rocket");light_purple_gray="#f5f3f8"
-fig, ax = plt.subplots(figsize=(12,6))
+fig, ax = plt.subplots(figsize=(13.5,6))
 ax.set_facecolor(light_purple_gray)
 ax.plot(KL_vals,      Eg_vals,        lw=2, alpha=0.8, label="Tilted (true)")
 ax.plot(KL_proxy_vals,Eg_proxy_vals,  lw=2, alpha=0.8, label="Tilted (proxy)")
@@ -189,17 +191,22 @@ colors = ['gold', 'blue']
 ax.scatter([klb], [ebo], marker='*', s=200, c=colors[0], edgecolors='black',label='BoN (HedgeTune)')
 ax.scatter([klp], [ebp], marker='*', s=200, c=colors[1], edgecolors='black',label='BoP (HedgeTune)')
 
-ax.legend()
+sbon_points = []
+for n in N_LIST:
+    th = hedge_tune(g,'SBoN',0,LAMBDA_GRID[-1],n=n)
+    if th==np.inf:
+        ks,es = KL_BoN(n),Eg_BoN(n)
+    else:
+        [ks], [es] = softbon_mc(n, [th], m=M_MC)
+    ax.scatter(ks,es,marker="*",s=100,color="red",edgecolors="black",alpha=0.5, zorder=10)
+ax.scatter([],[],marker="*",s=100,color="red",edgecolors="black",label="SBoN (HedgeTune)")
+
+ax.legend(loc="center right", bbox_to_anchor=(1.22, 0.305), ncol=1, fontsize=12)
 plt.tight_layout()
 plt.savefig("rewardKL.pdf", bbox_inches="tight")
 
-
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 LAMBDA_LIST = [0.01, 0.05, 0.075, 0.1, 0.2, 0.3, 0.5, 1]
-recip_2sf = [float(f"{1/x:.2g}") for x in LAMBDA_LIST]
+LAMBDA_LIST = [float(f"{1/x:.2g}") for x in LAMBDA_LIST]
 N_FINE = np.arange(2, 80)
 colors = plt.cm.viridis(np.linspace(0.15, 0.85, len(LAMBDA_LIST)))
 
@@ -210,7 +217,7 @@ def softbon_fixed_lambda(n_array, lmb, m=M_MC):
     for n in n_array:
         proxy = rng.random((m, n))
         gold = g(proxy)
-        logits = proxy / lmb
+        logits = proxy * lmb
         gumbels = -np.log(-np.log(rng.random(logits.shape)))
         idx = np.argmax(logits + gumbels, axis=1)
         chosen = gold[np.arange(m), idx]
@@ -221,7 +228,6 @@ def softbon_fixed_lambda(n_array, lmb, m=M_MC):
         kl_vals.append((pdf * np.log(pdf)).sum() * bw)
     return np.array(kl_vals), np.array(eg_vals)
 
-
 sns.set_theme(style="whitegrid",palette="rocket");light_purple_gray="#f5f3f8"
 fig, ax = plt.subplots(figsize=(10, 5))
 ax.set_facecolor(light_purple_gray)
@@ -230,13 +236,12 @@ Eg_n = np.array([Eg_BoN(n) for n in N_FINE])
 KL_n = np.array([KL_BoN(n) for n in N_FINE])
 ax.scatter(KL_n, Eg_n, c="black", s=10, label="BoN")
 
-for c, lmb, temp in zip(colors, LAMBDA_LIST, recip_2sf):
+for c, lmb in zip(colors, LAMBDA_LIST):
     kl, eg = softbon_fixed_lambda(N_FINE, lmb)
-    ax.plot(kl, eg, "-o", ms=3, lw=1.2, color=c, label=f"λ={temp}")
-
+    ax.plot(kl, eg, "-o", ms=3, lw=1.2, color=c, label=f"λ={lmb}")
 
 ax.set_xlabel("KL divergence to the reference distribution", fontsize=16)
 ax.set_ylabel("Expected value of true reward",     fontsize=16)
-ax.legend(loc="center right", bbox_to_anchor=(1.2, 0.263), ncol=1, fontsize=12)
+ax.legend(loc="center right", bbox_to_anchor=(1.25, 0.263), ncol=1, fontsize=12)
 plt.tight_layout()
 plt.savefig("rewardKL2.pdf", bbox_inches="tight")
