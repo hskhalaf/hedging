@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REWARD HACKING IN LLMS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #fcfcfc;
+            color: #000000;
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+        /* BRUTAL HEADER */
+        .header {
+            background: #ffffff;
+            border: 4px solid #000000;
+            margin: 20px;
+            padding: 40px;
+            box-shadow: 12px 12px 0px #000000;
+            position: relative;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(45deg, #666666 0%, #666666 25%, transparent 25%, transparent 50%, #666666 50%, #666666 75%, transparent 75%);
+            background-size: 8px 8px;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        .title {
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 0.9;
+            margin-bottom: 20px;
+            color: #000000;
+        }
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            font-weight: 600;
+            color: #333333;
+            text-transform: lowercase;
+            margin-bottom: 30px;
+            border-left: 6px solid #333333;
+            padding-left: 20px;
+        }
+        .authors {
+            background: #000000;
+            color: #ffffff;
+            padding: 15px 20px;
+            margin: 20px 0;
+            font-weight: 700;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .buttons {
+            display: flex;
+            gap: 0;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 15px 25px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            border: 3px solid #000000;
+            position: relative;
+        }
+        .btn:hover {
+            background: #ffffff;
+            color: #000000;
+            transform: translate(-3px, -3px);
+            box-shadow: 3px 3px 0px #000000;
+        }
+        .btn.secondary {
+            background: #ffffff;
+            color: #000000;
+        }
+        .btn.secondary:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+        .btn.danger {
+            background: #333333;
+            border-color: #333333;
+        }
+        .btn.danger:hover {
+            background: #ffffff;
+            color: #333333;
+        }
+        /* NAVIGATION */
+        .nav {
+            background: #000000;
+            color: #ffffff;
+            margin: 0 20px;
+            border: 4px solid #000000;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+        .nav-item {
+            background: #000000;
+            color: #ffffff;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-right: 2px solid #ffffff;
+            transition: all 0.1s ease;
+            flex: 1;
+            text-align: center;
+            min-width: 120px;
+        }
+        .nav-item:last-child {
+            border-right: none;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: #ffffff;
+            color: #000000;
+        }
+        /* CONTENT BLOCKS */
+        .container {
+            margin: 40px 20px;
+        }
+        .block {
+            background: #ffffff;
+            border: 4px solid #000000;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .block.danger {
+            border-color: #cc4444;
+            box-shadow: 8px 8px 0px #cc4444;
+        }
+        .block.success {
+            border-color: #333333;
+            box-shadow: 8px 8px 0px #333333;
+        }
+        .block.warning {
+            border-color: #333333;
+            box-shadow: 8px 8px 0px #333333;
+        }
+        .block-header {
+            background: #000000;
+            color: #ffffff;
+            padding: 20px;
+            font-weight: 800;
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+        .block.danger .block-header {
+            background: #cc4444;
+        }
+        .block.success .block-header {
+            background: #333333;
+        }
+        .block.warning .block-header {
+            background: #333333;
+        }
+        .block-content {
+            padding: 30px;
+            background: #ffffff;
+        }
+        /* DEMO SECTION */
+        .demo-block {
+            background: #ffffff;
+            border: 6px solid #000000;
+            margin: 40px 0;
+            position: relative;
+        }
+        .demo-header {
+            background: #333333;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .demo-content {
+            padding: 40px;
+            background: #fcfcfc;
+            border-top: 4px solid #000000;
+        }
+        /* CHART CONTAINER */
+        .chart-container {
+            background: #ffffff;
+            border: 4px solid #000000;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 8px 8px 0px #000000;
+        }
+        /* GRID LAYOUTS */
+        .grid {
+            display: grid;
+            gap: 0;
+            margin: 20px 0;
+        }
+        .grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .grid-item {
+            background: #ffffff;
+            border: 3px solid #000000;
+            padding: 25px;
+            position: relative;
+        }
+        .grid-item:not(:last-child) {
+            border-right: none;
+        }
+        .grid-item.highlight {
+            background: #f0f0f0;
+            border: 3px solid #000000;
+        }
+        .grid-item.danger {
+            background: #f5f5f5;
+        }
+        .grid-item.success {
+            background: #f8f8f8;
+        }
+        /* METHOD CARDS */
+        .method-card {
+            background: #ffffff;
+            border: 4px solid #000000;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .method-card.bon {
+            box-shadow: 8px 8px 0px #444444;
+        }
+        .method-card.sbon {
+            box-shadow: 8px 8px 0px #555555;
+        }
+        .method-card.bop {
+            box-shadow: 8px 8px 0px #666666;
+        }
+        .method-header {
+            background: #000000;
+            color: #ffffff;
+            padding: 15px 20px;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+        .method-card.bon .method-header {
+            background: #444444;
+        }
+        .method-card.sbon .method-header {
+            background: #555555;
+        }
+        .method-card.bop .method-header {
+            background: #666666;
+        }
+        .method-content {
+            padding: 20px;
+        }
+        .formula {
+            background: #000000;
+            color: #ffffff;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            border: 2px solid #333333;
+            overflow-x: auto;
+        }
+        /* TYPOGRAPHY */
+        h1, h2, h3 {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        .big-text {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .highlight-text {
+            background: #eeeeee;
+            padding: 2px 6px;
+            font-weight: 600;
+            border: 1px solid #000000;
+        }
+        .danger-text {
+            color: #cc4444;
+            font-weight: 700;
+        }
+        .success-text {
+            color: #000000;
+            font-weight: 700;
+        }
+        /* ALERTS */
+        .alert {
+            padding: 20px;
+            margin: 20px 0;
+            border: 4px solid;
+            font-weight: 600;
+        }
+        .alert.danger {
+            background: #fff5f5;
+            border-color: #cc4444;
+            color: #cc4444;
+        }
+        .alert.warning {
+            background: #f5f5f5;
+            border-color: #333333;
+            color: #000000;
+        }
+        .alert.success {
+            background: #f5f5f5;
+            border-color: #000000;
+            color: #000000;
+        }
+        /* FOOTER */
+        .footer {
+            background: #000000;
+            color: #ffffff;
+            margin: 40px 20px 20px 20px;
+            border: 4px solid #000000;
+            padding: 40px;
+            text-align: center;
+        }
+        .footer h2 {
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .footer-link {
+            background: #ffffff;
+            color: #000000;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            border: 2px solid #ffffff;
+            transition: all 0.1s ease;
+        }
+        .footer-link:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header {
+                margin: 10px;
+                padding: 20px;
+            }
+            .nav {
+                margin: 0 10px;
+            }
+            .container {
+                margin: 20px 10px;
+            }
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .grid-item:not(:last-child) {
+                border-right: 3px solid #000000;
+                border-bottom: none;
+            }
+            .nav-content {
+                flex-direction: column;
+            }
+            .nav-item {
+                border-right: none;
+                border-bottom: 2px solid #ffffff;
+                min-width: unset;
+                width: 100%;
+            }
+            .nav-item:last-child {
+                border-bottom: none;
+            }
+            .buttons {
+                flex-direction: column;
+            }
+            .footer {
+                margin: 20px 10px 10px 10px;
+            }
+            .footer-links {
+                flex-direction: column;
+            }
+        }
+        /* ANIMATIONS */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        .glitch:hover {
+            animation: glitch 0.3s ease-in-out;
+        }
+        /* CODE BLOCKS */
+        .code {
+            background: #000000;
+            color: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+            border: 3px solid #333333;
+            overflow-x: auto;
+            position: relative;
+        }
+        .code::before {
+            content: '> ALGORITHM';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #333333;
+            color: #ffffff;
+            padding: 5px 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .main-content .block {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Force all blocks to be centered */
+        .block {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: block !important;
+        }
+        .demo-block {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+    <div include-html="header.html"></div>
+    <div include-html="main.html"></div>
+    <div include-html="footer.html"></div>
+    <script>
+    // Simple HTML include script
+    function includeHTML() {
+      var z, i, elmnt, file;
+      z = document.querySelectorAll('[include-html]');
+      for (i = 0; i < z.length; i++) {
+        elmnt = z[i];
+        file = elmnt.getAttribute('include-html');
+        if (file) {
+          fetch(file)
+            .then(response => response.text())
+            .then(data => {
+              elmnt.innerHTML = data;
+              elmnt.removeAttribute('include-html');
+              includeHTML();
+            });
+          return;
+        }
+      }
+    }
+    includeHTML();
+    </script>
+<script>
+let animationId;
+let isAnimating = false;
+
+function generateCurvePoints() {
+    const points = [];
+    const numPoints = 150;
+    let peakPoint = null;
+    let maxY = -Infinity;
+    for (let i = 0; i <= numPoints; i++) {
+        const t = i / numPoints;
+        const x = 80 + (t * 1.75) * (750 / 1.75);
+        const scaledT = t * 1.75;
+        const funcT = scaledT / 1.75;
+        let y = -1.5 * Math.pow(funcT - 0.6, 2) + 0.9;
+        y = Math.max(0, Math.min(1, y));
+        const svgY = 420 - y * 370;
+        if (y > maxY) {
+            maxY = y;
+            peakPoint = { x, y: svgY, t: scaledT, index: i };
+        }
+        points.push({ x, y: svgY, t: scaledT });
+    }
+    return { points, peakPoint };
+}
+
+function animateCurve() {
+    const curve = document.getElementById('curve');
+    const safeBg = document.getElementById('safeBg');
+    const dangerBg = document.getElementById('dangerBg');
+    const peakStar = document.getElementById('peakStar');
+    const hedgeText = document.getElementById('hedgeText');
+    const peakArrow = document.getElementById('peakArrow');
+    const { points, peakPoint } = generateCurvePoints();
+    safeBg.setAttribute('width', peakPoint.x - 80);
+    dangerBg.setAttribute('x', peakPoint.x);
+    dangerBg.setAttribute('width', 830 - peakPoint.x);
+    const safeLabel = document.getElementById('safeZoneLabel');
+    const dangerLabel = document.getElementById('dangerZoneLabel');
+    const safeX = 80 + (peakPoint.x - 80) / 2;
+    const safeY = 275;
+    safeLabel.setAttribute('x', safeX);
+    safeLabel.setAttribute('y', safeY);
+    const dangerX = peakPoint.x + (830 - peakPoint.x) / 2;
+    const dangerY = 275;
+    dangerLabel.setAttribute('x', dangerX);
+    dangerLabel.setAttribute('y', dangerY);
+    curve.setAttribute('d', '');
+    peakStar.style.opacity = '0';
+    hedgeText.setAttribute('opacity', '0');
+    peakArrow.style.opacity = '0';
+    safeLabel.style.opacity = '0';
+    dangerLabel.style.opacity = '0';
+    let startTime = null;
+    const total = points.length - 1;
+    const duration = 2500;
+    function drawFrame(ts) {
+        if (!isAnimating) return;
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+        let t = Math.min(elapsed / duration, 1);
+        const currentPoint = Math.floor(t * total);
+        let pathData = `M ${points[0].x} ${points[0].y}`;
+        for (let i = 1; i <= currentPoint; i++) {
+            pathData += ` L ${points[i].x} ${points[i].y}`;
+        }
+        curve.setAttribute('d', pathData);
+        if (currentPoint > 5) {
+            safeLabel.style.opacity = '1';
+            safeBg.style.opacity = '0.08';
+        }
+        if (currentPoint > peakPoint.index) {
+            dangerLabel.style.opacity = '1';
+            dangerBg.style.opacity = '0.08';
+        }
+        if (currentPoint >= total) {
+            const starPolygon = peakStar.querySelector('polygon');
+            starPolygon.setAttribute('transform', `translate(${peakPoint.x}, ${peakPoint.y})`);
+            setTimeout(() => {
+                peakStar.style.opacity = '1';
+                setTimeout(() => {
+                    hedgeText.setAttribute('opacity', '1');
+                    const arrowPath = document.getElementById('arrowPath');
+                    const startX = 340;
+                    const startY = 40;
+                    const endX = peakPoint.x - 40;
+                    const endY = peakPoint.y - 15;
+                    arrowPath.setAttribute('d', `M ${startX} ${startY} Q ${(startX + endX) / 2 - 60} ${(startY + endY) / 2 + 20} ${endX} ${endY}`);
+                    setTimeout(() => {
+                        peakArrow.style.opacity = '1';
+                    }, 200);
+                }, 400);
+            }, 200);
+            isAnimating = false;
+            return;
+        }
+        animationId = requestAnimationFrame(drawFrame);
+    }
+    isAnimating = true;
+    requestAnimationFrame(drawFrame);
+}
+
+function startAnimation() {
+    if (isAnimating) return;
+    isAnimating = true;
+    document.getElementById('safeBg').style.opacity = '0';
+    document.getElementById('dangerBg').style.opacity = '0';
+    animateCurve();
+}
+
+function resetAnimation() {
+    isAnimating = false;
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+    }
+    document.getElementById('curve').setAttribute('d', '');
+    document.getElementById('safeBg').style.opacity = '0';
+    document.getElementById('dangerBg').style.opacity = '0';
+    document.getElementById('safeZoneLabel').style.opacity = '0';
+    document.getElementById('dangerZoneLabel').style.opacity = '0';
+    document.getElementById('peakStar').style.opacity = '0';
+    document.getElementById('hedgeText').setAttribute('opacity', '0');
+    document.getElementById('peakArrow').style.opacity = '0';
+}
+</script>
+</body>
+</html> 

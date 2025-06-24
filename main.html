@@ -1,0 +1,195 @@
+<div class="container main-content" style="display: flex; flex-direction: column; align-items: center;">
+    <section id="problem">
+      <div class="block danger" style="max-width: 1100px; min-width: 850px; width: 100%;">
+        
+        <!-- Centered headline -->
+        <div class="block-header big-text" style="text-align: center;">
+          ALL PROXY REWARDS ARE BAD… BUT SOME CAN BE MADE USEFUL!
+        </div>
+  
+        <div class="block-content">
+          <p>Inference-time alignment is simple and effective: generate candidate responses from your model, score them using a reward model, and pick a response—no retraining needed! One successful approach is Best-of-n where you select the highest scoring response.</p>
+          <p> However, these reward models function as proxies for our desired objectives such as helpfulness and safety. By overoptimizing for a misspecified reward, we can fall victim to <span class="highlight-text">REWARD HACKING</span>!</p>
+          <div class="alert danger" style="text-align: center;  font-size: 1.1rem;" >
+            <strong>REWARD HACKING:</strong>  The desired performance first improves, then collapses as we optimize harder.
+          </div>
+  
+          <p><strong>Our contributions:</strong></p>
+          <p><strong>1.</strong> We mathematically formalise inference-time reward hacking and prove its inevitability (Theorem&nbsp;1).</p>
+          <p><strong>2.</strong> We introduce <em>Best-of-Poisson</em>, which approximates the optimal tilted distribution with negligible KL gap.</p>
+          <p><strong>3.</strong> We develop <em>HedgeTune</em>, a lightweight framework that finds optimal inference-time parameters.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE DEMO -->
+    <section id="demo" style="display: flex; justify-content: center;">
+        <div class="demo-block" style="max-width: 1100px; min-width: 850px; width: 100%;">
+            <div class="demo-header"> EXAMPLE OF REWARD HACKING</div>
+            <div class="demo-content">
+                <div class="chart-container">
+                    <svg width="850" height="500" id="chart" style="background: #fcfcfc;">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                                <polygon points="0 0, 8 3, 0 6" fill="#000000"/>
+                            </marker>
+                        </defs>
+                        <text id="hedgeText" x="425" y="28" font-family="JetBrains Mono, monospace" font-size="20" font-weight="700" fill="#000000" text-anchor="middle" opacity="0" style="transition: opacity 0.8s ease;">YOU CAN HEDGE TO FIND IT!</text>
+                        <g id="peakArrow" style="opacity: 0; transition: opacity 0.8s ease;">
+                            <path id="arrowPath" d="" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        </g>
+                        <rect id="safeBg" x="80" y="50" width="" height="370" fill="#00ff00" opacity="0"/>
+                        <rect id="dangerBg" x="" y="50" width="" height="370" fill="#ff0000" opacity="0"/>
+                        <line x1="80" y1="50" x2="80" y2="420" stroke="#000000" stroke-width="2"/>
+                        <line x1="80" y1="420" x2="830" y2="420" stroke="#000000" stroke-width="2"/>
+                        <text id="safeZoneLabel" x="" y="" font-family="JetBrains Mono, monospace" font-size="18" font-weight="600" fill="#00aa00" text-anchor="middle" opacity="0" style="transition: opacity 0.3s ease;">safe</text>
+                        <text id="dangerZoneLabel" x="" y="" font-family="JetBrains Mono, monospace" font-size="18" font-weight="600" fill="#cc0000" text-anchor="middle" opacity="0" style="transition: opacity 0.3s ease;">danger!</text>
+                        <text x="25" y="240" font-family="JetBrains Mono, monospace" font-size="14" font-weight="500" fill="#000000" text-anchor="middle" transform="rotate(-90, 25, 240)">true reward</text>
+                        <text x="465" y="480" font-family="JetBrains Mono, monospace" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">kl divergence to the base model</text>
+                        <!-- Y-axis ticks -->
+                        <line x1="75" y1="420" x2="85" y2="420" stroke="#666666" stroke-width="1"/>
+                        <text x="70" y="424" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">0</text>
+                        <line x1="75" y1="320" x2="85" y2="320" stroke="#666666" stroke-width="1"/>
+                        <text x="70" y="324" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">0.25</text>
+                        <line x1="75" y1="220" x2="85" y2="220" stroke="#666666" stroke-width="1"/>
+                        <text x="70" y="224" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">0.5</text>
+                        <line x1="75" y1="120" x2="85" y2="120" stroke="#666666" stroke-width="1"/>
+                        <text x="70" y="124" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">0.75</text>
+                        <line x1="75" y1="50" x2="85" y2="50" stroke="#666666" stroke-width="1"/>
+                        <text x="70" y="54" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">1.0</text>
+                        <!-- X-axis ticks -->
+                        <line x1="80" y1="420" x2="80" y2="435" stroke="#666666" stroke-width="1"/>
+                        <text x="80" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">0</text>
+                        <line x1="187" y1="420" x2="187" y2="435" stroke="#666666" stroke-width="1"/>
+                        <text x="187" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">0.25</text>
+                        <line x1="294" y1="420" x2="294" y2="435" stroke="#666666" stroke-width="1"/>
+                        <text x="294" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">0.5</text>
+                        <line x1="401" y1="420" x2="401" y2="435" stroke="#666666" stroke-width="1"/>
+                        <text x="401" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">0.75</text>
+                        <line x1="509" y1="420" x2="509" y2="435" stroke="#666666" stroke-width="1"/>
+                        <text x="509" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">1.0</text>
+                        <line x1="616" y1="420" x2="616" y2="435" stroke="#666666" stroke-width="1"/>
+                        <text x="616" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">1.25</text>
+                        <line x1="723" y1="420" x2="723" y2="435" stroke="#666666" stroke-width="1"/>
+                        <text x="723" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">1.5</text>
+                        <line x1="830" y1="420" x2="830" y2="435" stroke="#666666" stroke-width="1"/>
+                        <text x="830" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">1.75</text>
+                        <path id="curve" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" d=""/>
+                        <g id="peakStar" style="opacity: 0; transition: opacity 0.3s ease;">
+                            <polygon points="0,-15 4.5,-4.5 15,-4.5 6,3 10.5,13.5 0,7.5 -10.5,13.5 -6,3 -15,-4.5 -4.5,-4.5" fill="#ffcc00" stroke="#ff9900" stroke-width="2" transform="translate(500, 95)"/>
+                        </g>
+                    </svg>
+                    <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="startAnimation()" class="btn" style="padding: 10px 20px; font-size: 12px;">START</button>
+                        <button onclick="resetAnimation()" class="btn secondary" style="padding: 10px 20px; font-size: 12px;">RESET</button>
+                    </div>
+                </div>
+                <div class="alert warning">
+                    <strong>WATCH:</strong> As optimization strength increases, true reward first improves then COLLAPSES. The peak is your hacking threshold. 
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- THEORY -->
+    <section id="theory">
+        <div class="block warning" style="max-width: 1100px; min-width: 850px; width: 100%;">
+            <div class="block-header big-text" style="text-align: center; font-size: 2.3rem;">🔬 THEORETICAL FOUNDATION</div>
+            <div class="block-content">
+                <div class="grid grid-2">
+                    <div class="grid-item">
+                        <h3>INEVITABILITY THEOREM</h3>
+                        <p>We <span class="highlight-text">PROVE</span> exact conditions under which reward hacking is inevitable for common mechanisms like Best-of-n.</p>
+                    </div>
+                    <div class="grid-item highlight">
+                        <h3>HACKING THRESHOLD</h3>
+                        <p>There exists an optimal stopping point θ† where proxy optimization should cease.</p>
+                        <p class="danger-text">BEYOND THIS POINT = GUARANTEED DEGRADATION</p>
+                    </div>
+                </div>
+                <div class="alert success">
+                    <strong>KEY INSIGHT:</strong> The problem is tractable because the hacking threshold is unique, so let's find it!
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- METHODS -->
+    <section id="methods">
+        <div class="block success" style="max-width: 1100px; min-width: 850px; width: 100%;">
+            <div class="block-header big-text" style="text-align: center; font-size: 2.3rem;">⚡ METHODS & SOLUTIONS</div>
+            <div class="block-content">
+                <div class="grid grid-3">
+                    <div class="grid-item">
+                        <h3>BEST-OF-N (BON)</h3>
+                        <p>Sample N responses, select highest proxy score.</p>
+                        <div class="formula">X_BoN = arg max r_p(X_i)</div>
+                    </div>
+                    <div class="grid-item">
+                        <h3>SOFT BEST-OF-N (SBON)</h3>
+                        <p>Temperature-scaled softmax over candidates.</p>
+                        <div class="formula">P(Z=i) ∝ exp(λr_p(X_i))</div>
+                    </div>
+                    <div class="grid-item highlight">
+                        <h3>BEST-OF-POISSON (BOP) [OURS]</h3>
+                        <p><span class="highlight-text">NOVEL:</span> Poisson-distributed sample count.</p>
+                        <div class="formula">n ~ Poisson(μ)<br>KL_gap ≤ 7×10^{-3}</div>
+                    </div>
+                </div>
+                <div class="alert success">
+                    <strong>HEDGETUNE ALGORITHM:</strong> Automatically finds optimal parameters to avoid hacking regime.
+                </div>
+                <div class="code">
+<strong>HEDGETUNE:</strong>
+1. COMPUTE score function ψ(x, θ)
+2. DEFINE residual R(θ) = E[r_t(x)ψ(x, θ)]  
+3. SOLVE R(θ*) = 0 using root-finding
+4. RETURN optimal parameter θ*
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="results">
+        <div class="block" style="max-width: 1100px; min-width: 850px; width: 100%;">
+            <div class="block-header big-text" style="text-align: center; font-size: 2.3rem;">📊 EXPERIMENTAL RESULTS</div>
+            <div class="block-content">
+                <div class="grid grid-3">
+                    <div class="grid-item success">
+                        <h3>SYNTHETIC</h3>
+                        <p class="big-text success-text">+10%</p>
+                        <p>reward improvement over greedy BoN when proxy miscalibrated on top 5%</p>
+                    </div>
+                    <div class="grid-item success">
+                        <h3>REAL-WORLD</h3>
+                        <p class="big-text success-text">VALIDATED</p>
+                        <p>on AlpacaRM with varying dataset sizes (10k-80k)</p>
+                    </div>
+                    <div class="grid-item success">
+                        <h3>EFFICIENCY</h3>
+                        <p class="big-text success-text">MINIMAL</p>
+                        <p>computational overhead compared to standard BoN</p>
+                    </div>
+                </div>
+                <div class="alert warning">
+                    <strong>CRITICAL FINDING:</strong> Even 5% proxy miscalibration at the top leads to significant hacking at n ≈ 50
+                </div>
+                <div class="grid grid-2">
+                    <div class="grid-item">
+                        <h3>BEFORE HEDGING</h3>
+                        <p class="danger-text">• Proxy reward ↗️ True reward ↘️</p>
+                        <p class="danger-text">• Winner's curse dominates</p>
+                        <p class="danger-text">• Performance degrades</p>
+                    </div>
+                    <div class="grid-item highlight">
+                        <h3>AFTER HEDGING</h3>
+                        <p class="success-text">• Optimal threshold found</p>
+                        <p class="success-text">• True reward maximized</p>
+                        <p class="success-text">• Safe exploitation achieved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div> 
