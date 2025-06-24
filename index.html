@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>REWARD HACKING IN LLMS</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
@@ -91,8 +91,8 @@
         .btn:hover {
             background: #ffffff;
             color: #000000;
-            transform: translate(-3px, -3px);
-            box-shadow: 3px 3px 0px #000000;
+            transform: translate(-2px, -2px);
+            box-shadow: 2px 2px 0px #000000;
         }
         .btn.secondary {
             background: #ffffff;
@@ -147,6 +147,7 @@
         .nav-item:hover, .nav-item.active {
             background: #ffffff;
             color: #000000;
+            transform: none;
         }
         /* CONTENT BLOCKS */
         .container {
@@ -157,6 +158,9 @@
             border: 4px solid #000000;
             margin-bottom: 40px;
             position: relative;
+            max-width: 1100px;
+            min-width: 850px;
+            width: 100%;
         }
         .block.danger {
             border-color: #cc4444;
@@ -199,6 +203,9 @@
             border: 6px solid #000000;
             margin: 40px 0;
             position: relative;
+            max-width: 1100px;
+            min-width: 850px;
+            width: 100%;
         }
         .demo-header {
             background: #333333;
@@ -401,11 +408,34 @@
                 margin: 10px;
                 padding: 20px;
             }
+            .title {
+                font-size: clamp(1.5rem, 6vw, 2.5rem);
+                line-height: 1.1;
+            }
+            .subtitle {
+                font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            }
+            .authors {
+                font-size: 14px;
+                line-height: 1.3;
+            }
             .nav {
                 margin: 0 10px;
             }
             .container {
                 margin: 20px 10px;
+            }
+            .block, .demo-block {
+                max-width: 100% !important;
+                min-width: 100% !important;
+                margin: 20px 0 !important;
+            }
+            .block-header {
+                font-size: 24px;
+                padding: 15px;
+            }
+            .block-content, .demo-content {
+                padding: 20px;
             }
             .grid-2, .grid-3 {
                 grid-template-columns: 1fr;
@@ -422,18 +452,120 @@
                 border-bottom: 2px solid #ffffff;
                 min-width: unset;
                 width: 100%;
+                font-size: 11px;
+                padding: 12px 15px;
             }
             .nav-item:last-child {
                 border-bottom: none;
             }
             .buttons {
                 flex-direction: column;
+                gap: 0;
+            }
+            .btn {
+                width: 100%;
+                margin: 0;
+                border-bottom: 2px solid #333333;
+            }
+            .btn:last-child {
+                border-bottom: none;
             }
             .footer {
                 margin: 20px 10px 10px 10px;
+                padding: 20px;
             }
             .footer-links {
                 flex-direction: column;
+                gap: 0;
+            }
+            .footer-link {
+                border-bottom: 2px solid #333333;
+                width: 100%;
+                text-align: center;
+            }
+            .footer-link:last-child {
+                border-bottom: none;
+            }
+            /* Demo chart responsiveness */
+            .chart-container {
+                padding: 15px;
+                margin: 10px 0;
+                overflow-x: auto;
+            }
+            #chart {
+                width: 100%;
+                height: 400px;
+                min-width: 600px;
+            }
+            .demo-header {
+                font-size: 18px;
+                padding: 15px;
+            }
+            /* Typography adjustments */
+            h2 {
+                font-size: 24px;
+            }
+            h3 {
+                font-size: 16px;
+            }
+            .big-text {
+                font-size: 18px;
+            }
+            .alert {
+                padding: 15px;
+                margin: 15px 0;
+                font-size: 14px;
+            }
+            .formula {
+                padding: 12px;
+                font-size: 12px;
+            }
+            .code {
+                padding: 15px;
+                font-size: 12px;
+            }
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 480px) {
+            .header {
+                margin: 5px;
+                padding: 15px;
+            }
+            .title {
+                font-size: clamp(1.2rem, 5vw, 2rem);
+            }
+            .subtitle {
+                font-size: clamp(0.8rem, 2vw, 1rem);
+            }
+            .authors {
+                font-size: 12px;
+            }
+            .nav, .container, .footer {
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+            .block-header {
+                font-size: 20px;
+                padding: 12px;
+            }
+            .block-content, .demo-content {
+                padding: 15px;
+            }
+            .btn {
+                padding: 12px 20px;
+                font-size: 11px;
+            }
+            .nav-item {
+                padding: 10px 12px;
+                font-size: 10px;
+            }
+            #chart {
+                height: 350px;
+                min-width: 500px;
+            }
+            .chart-container {
+                padding: 10px;
             }
         }
         /* ANIMATIONS */
@@ -488,6 +620,7 @@
     </style>
 </head>
 <body>
+
     <div include-html="header.html"></div>
     <div include-html="main.html"></div>
     <div include-html="footer.html"></div>
