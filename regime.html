@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Four Curves Animation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'JetBrains Mono', monospace;
+            background: #fcfcfc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 3px;
+            border: 2px solid #000000;
+            box-shadow: 8px 8px 0px #000000;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .main-title {
+            color: #000000;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+        
+        .subtitle {
+            color: #333333;
+            font-size: 16px;
+            font-weight: 400;
+            margin: 4px 0 0 0;
+        }
+        
+        .chart-container {
+            background: #ffffff;
+            border-radius: 0px;
+            padding: 24px;
+            border: 2px solid #000000;
+            margin-top: 20px;
+        }
+        
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .divider {
+            stroke: #000000;
+            stroke-width: 2;
+        }
+        
+        .axis {
+            stroke: #666666;
+            stroke-width: 1;
+        }
+        
+        .curve {
+            fill: none;
+            stroke: #000000;
+            stroke-width: 4;
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawCurve 4s ease-in-out infinite;
+            stroke-linecap: round;
+        }
+        
+        .curve-1 { animation-delay: 0s; }
+        .curve-2 { animation-delay: 0s; }
+        .curve-3 { animation-delay: 0s; }
+        .curve-4 { animation-delay: 0s; }
+        
+        @keyframes drawCurve {
+            0% {
+                stroke-dashoffset: 200;
+            }
+            45% {
+                stroke-dashoffset: 0;
+            }
+            55% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: -200;
+            }
+        }
+        
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 0px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        button:hover {
+            background: #333333;
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">Possible regimes</h1>
+        </div>
+        
+        <div class="chart-container">
+            <svg viewBox="0 0 400 400">
+                <!-- Dividers -->
+                <line x1="200" y1="0" x2="200" y2="400" class="divider" />
+                <line x1="0" y1="200" x2="400" y2="200" class="divider" />
+                
+                <!-- Top Left Quadrant - Monotonically Increasing -->
+                <g>
+                    <!-- Axes -->
+                    <line x1="50" y1="50" x2="50" y2="150" class="axis" />
+                    <line x1="50" y1="150" x2="150" y2="150" class="axis" />
+                    <!-- Curve: starts at bottom-left, ends at top-right with wider range -->
+                    <path d="M 60 140 Q 85 105 110 80 Q 125 65 140 50" class="curve curve-1" />
+                </g>
+                
+                <!-- Top Right Quadrant - Concave (up then down) -->
+                <g>
+                    <!-- Axes -->
+                    <line x1="250" y1="50" x2="250" y2="150" class="axis" />
+                    <line x1="250" y1="150" x2="350" y2="150" class="axis" />
+                    <!-- Curve: starts at bottom-left, peaks after middle (higher), ends at bottom-right with wider range -->
+                    <path d="M 260 140 Q 310 40 340 140" class="curve curve-2" />
+                </g>
+                
+                <!-- Bottom Left Quadrant - Convex (down then up) -->
+                <g>
+                    <!-- Axes -->
+                    <line x1="50" y1="250" x2="50" y2="350" class="axis" />
+                    <line x1="50" y1="350" x2="150" y2="350" class="axis" />
+                    <!-- Curve: starts lower, dips more dramatically after middle, ends lower -->
+                    <path d="M 60 280 Q 110 360 140 280" class="curve curve-3" />
+                </g>
+                
+                <!-- Bottom Right Quadrant - Monotonically Decreasing -->
+                <g>
+                    <!-- Axes -->
+                    <line x1="250" y1="250" x2="250" y2="350" class="axis" />
+                    <line x1="250" y1="350" x2="350" y2="350" class="axis" />
+                    <!-- Curve: starts at top-left, ends at bottom-right -->
+                    <path d="M 260 260 Q 285 285 310 310 Q 325 325 340 340" class="curve curve-4" />
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="window.location.reload()">restart</button>
+    </div>
+</body>
+</html>

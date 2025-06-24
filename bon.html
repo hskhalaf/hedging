@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reward Hacking in LLMs</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'JetBrains Mono', monospace;
+            background: #fcfcfc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: #ffffff;
+            padding: 32px 32px 20px 32px;
+            border-radius: 3px;
+            border: 2px solid #000000;
+            max-width: 900px;
+            box-shadow: 8px 8px 0px #000000;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .main-title {
+            color: #000000;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+        
+        .subtitle {
+            color: #333333;
+            font-size: 16px;
+            font-weight: 400;
+            margin: 4px 0 0 0;
+        }
+        
+        .chart-container {
+            background: #ffffff;
+            border-radius: 0px;
+            padding: 24px;
+            border: 2px solid #000000;
+            margin-top: 20px;
+        }
+        
+        svg {
+            background: transparent;
+        }
+        
+        .axis-label {
+            font-size: 16px;
+            font-weight: 500;
+            fill: #000000;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .curve {
+            fill: none;
+            stroke: #000000;
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+        
+        .background-safe {
+            fill: #00ff00;
+            opacity: 0.1;
+        }
+        
+        .background-danger {
+            fill: #ff0000;
+            opacity: 0.1;
+        }
+        
+        .axes {
+            stroke: #000000;
+            stroke-width: 2;
+        }
+        
+        .tick {
+            stroke: #666666;
+            stroke-width: 1;
+        }
+        
+        .tick-label {
+            font-size: 11px;
+            fill: #666666;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 400;
+        }
+        
+        .peak-star {
+            fill: #ffcc00;
+            stroke: #ff9900;
+            stroke-width: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .peak-star.visible {
+            opacity: 1;
+        }
+        
+        .zone-label {
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 20px;
+        }
+        
+        .zone-label.visible {
+            opacity: 1;
+        }
+        
+        .safe-label {
+            fill: #00aa00;
+        }
+        
+        .danger-label {
+            fill: #cc0000;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 0px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        button:hover {
+            background: #333333;
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+        }
+        
+        .key-insight {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            color: #ff6600 !important;
+            text-align: center;
+            margin: 16px 0;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: block;
+            background: none;
+        }
+        
+        .peak-label.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">Reward Hacking</h1>
+            <p class="subtitle">when optimization goes wrong...</p>
+        </div>
+        
+        <div class="chart-container">
+            <svg width="850" height="500" id="chart">
+                <defs>
+                    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#000000"/>
+                    </marker>
+                </defs>
+                
+                <text id="hedgeText" x="425" y="28" font-family="JetBrains Mono, monospace" font-size="24" font-weight="700" fill="#000000" text-anchor="middle" opacity="0" style="transition: opacity 0.8s ease;">YOU CAN HEDGE TO FIND IT!</text>
+                
+                <g id="peakArrow" style="opacity: 0; transition: opacity 0.8s ease;">
+                    <path id="arrowPath" d="" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                </g>
+                
+                <rect id="safeBg" x="80" y="50" width="" height="370" class="background-safe" opacity="0"/>
+                <rect id="dangerBg" x="" y="50" width="" height="370" class="background-danger" opacity="0"/>
+            
+                <line x1="80" y1="50" x2="80" y2="420" class="axes"/>
+                <line x1="80" y1="420" x2="830" y2="420" class="axes"/>
+                
+                <text id="safeZoneLabel" x="" y="" class="zone-label safe-label" text-anchor="middle">safe</text>
+                <text id="dangerZoneLabel" x="" y="" class="zone-label danger-label" text-anchor="middle">danger!</text>
+                
+                <text x="25" y="240" class="axis-label" text-anchor="middle" transform="rotate(-90, 25, 240)">true reward</text>
+                <text x="465" y="480" class="axis-label" text-anchor="middle">number of samples n</text>
+                
+                <!-- Y-axis ticks -->
+                <line x1="75" y1="420" x2="85" y2="420" class="tick"/>
+                <text x="70" y="424" class="tick-label" text-anchor="end">0</text>
+                <line x1="75" y1="320" x2="85" y2="320" class="tick"/>
+                <text x="70" y="324" class="tick-label" text-anchor="end">0.25</text>
+                <line x1="75" y1="220" x2="85" y2="220" class="tick"/>
+                <text x="70" y="224" class="tick-label" text-anchor="end">0.5</text>
+                <line x1="75" y1="120" x2="85" y2="120" class="tick"/>
+                <text x="70" y="124" class="tick-label" text-anchor="end">0.75</text>
+                <line x1="75" y1="50" x2="85" y2="50" class="tick"/>
+                <text x="70" y="54" class="tick-label" text-anchor="end">1.0</text>
+                
+                <!-- X-axis ticks -->
+                <line x1="80" y1="420" x2="80" y2="435" class="tick"/>
+                <text x="80" y="450" class="tick-label" text-anchor="middle">1</text>
+                <line x1="187" y1="420" x2="187" y2="435" class="tick"/>
+                <text x="187" y="450" class="tick-label" text-anchor="middle">4</text>
+                <line x1="294" y1="420" x2="294" y2="435" class="tick"/>
+                <text x="294" y="450" class="tick-label" text-anchor="middle">8</text>
+                <line x1="401" y1="420" x2="401" y2="435" class="tick"/>
+                <text x="401" y="450" class="tick-label" text-anchor="middle">12</text>
+                <line x1="509" y1="420" x2="509" y2="435" class="tick"/>
+                <text x="509" y="450" class="tick-label" text-anchor="middle">16</text>
+                <line x1="616" y1="420" x2="616" y2="435" class="tick"/>
+                <text x="616" y="450" class="tick-label" text-anchor="middle">20</text>
+                <line x1="723" y1="420" x2="723" y2="435" class="tick"/>
+                <text x="723" y="450" class="tick-label" text-anchor="middle">24</text>
+                <line x1="830" y1="420" x2="830" y2="435" class="tick"/>
+                <text x="830" y="450" class="tick-label" text-anchor="middle">28</text>
+                
+                <g id="curvePoints"></g>
+                
+                <g id="peakStar" class="peak-star">
+                    <polygon points="0,-15 4.5,-4.5 15,-4.5 6,3 10.5,13.5 0,7.5 -10.5,13.5 -6,3 -15,-4.5 -4.5,-4.5" transform="translate(500, 95)"/>
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="startAnimation()">start</button>
+        <button onclick="resetAnimation()">reset</button>
+    </div>
+    </div>
+
+    <script>
+        let animationId;
+        let isAnimating = false;
+        
+        function generateCurvePoints() {
+            const points = [];
+            const numPoints = 18; // Even fewer points
+            let peakPoint = null;
+            let maxY = -Infinity;
+            
+            for (let i = 0; i <= numPoints; i++) {
+                const t = i / numPoints;
+                const x = 80 + (t * 1.75) * (750 / 1.75);
+                const scaledT = t * 1.75;
+                const funcT = scaledT / 1.75;
+                let y = -1.5 * Math.pow(funcT - 0.6, 2) + 0.9;
+                y = Math.max(0, Math.min(1, y));
+                const svgY = 420 - y * 370;
+                
+                if (y > maxY) {
+                    maxY = y;
+                    peakPoint = { x, y: svgY, t: scaledT, index: i };
+                }
+                
+                points.push({ x, y: svgY, t: scaledT });
+            }
+            
+            return { points, peakPoint };
+        }
+        
+        function animateCurve() {
+            const curvePoints = document.getElementById('curvePoints');
+            const safeBg = document.getElementById('safeBg');
+            const dangerBg = document.getElementById('dangerBg');
+            const peakStar = document.getElementById('peakStar');
+            const hedgeText = document.getElementById('hedgeText');
+            const peakArrow = document.getElementById('peakArrow');
+            const { points, peakPoint } = generateCurvePoints();
+            
+            safeBg.setAttribute('width', peakPoint.x - 80);
+            dangerBg.setAttribute('x', peakPoint.x);
+            dangerBg.setAttribute('width', 830 - peakPoint.x);
+            
+            const safeLabel = document.getElementById('safeZoneLabel');
+            const dangerLabel = document.getElementById('dangerZoneLabel');
+            const safeX = 80 + (peakPoint.x - 80) / 2;
+            const safeY = 275;
+            safeLabel.setAttribute('x', safeX);
+            safeLabel.setAttribute('y', safeY);
+            const dangerX = peakPoint.x + (830 - peakPoint.x) / 2;
+            const dangerY = 275;
+            dangerLabel.setAttribute('x', dangerX);
+            dangerLabel.setAttribute('y', dangerY);
+            
+            curvePoints.innerHTML = '';
+            peakStar.classList.remove('visible');
+            if (hedgeText) hedgeText.setAttribute('opacity', '0');
+            if (peakArrow) peakArrow.style.opacity = '0';
+            safeLabel.classList.remove('visible');
+            dangerLabel.classList.remove('visible');
+            
+            let startTime = null;
+            const total = points.length - 1;
+            const duration = 2500;
+            
+            function drawFrame(ts) {
+                if (!isAnimating) return;
+                if (!startTime) startTime = ts;
+                const elapsed = ts - startTime;
+                let t = Math.min(elapsed / duration, 1);
+                const currentPoint = Math.floor(t * total);
+                
+                // Add dots one by one
+                if (currentPoint < points.length) {
+                    const existingDot = document.getElementById(`dot-${currentPoint}`);
+                    if (!existingDot) {
+                        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        dot.setAttribute('id', `dot-${currentPoint}`);
+                        dot.setAttribute('cx', points[currentPoint].x);
+                        dot.setAttribute('cy', points[currentPoint].y);
+                        dot.setAttribute('r', '6');
+                        dot.setAttribute('fill', '#000000');
+                        dot.setAttribute('opacity', '0.7');
+                        curvePoints.appendChild(dot);
+                    }
+                }
+                
+                if (currentPoint > 5 && !safeLabel.classList.contains('visible')) {
+                    safeLabel.classList.add('visible');
+                    safeBg.style.opacity = '0.08';
+                }
+                
+                if (currentPoint > peakPoint.index && !dangerLabel.classList.contains('visible')) {
+                    dangerLabel.classList.add('visible');
+                    dangerBg.style.opacity = '0.08';
+                }
+                
+                if (currentPoint >= total) {
+                    const starPolygon = peakStar.querySelector('polygon');
+                    starPolygon.setAttribute('transform', `translate(${peakPoint.x}, ${peakPoint.y})`);
+                    
+                    setTimeout(() => {
+                        peakStar.classList.add('visible');
+                        // Show text and arrow together with smooth transition
+                        setTimeout(() => {
+                            if (hedgeText) hedgeText.setAttribute('opacity', '1');
+                            // Draw arrow from text to star
+                            if (peakArrow) {
+                                const arrowPath = document.getElementById('arrowPath');
+                                const startX = 340;
+                                const startY = 40;
+                                const endX = peakPoint.x - 40;
+                                const endY = peakPoint.y - 15;
+                                arrowPath.setAttribute('d', `M ${startX} ${startY} Q ${(startX + endX) / 2 - 60} ${(startY + endY) / 2 + 20} ${endX} ${endY}`);
+                                // Show arrow slightly after text starts appearing
+                                setTimeout(() => {
+                                    peakArrow.style.opacity = '1';
+                                }, 200);
+                            }
+                        }, 400);
+                    }, 200);
+                    
+                    isAnimating = false;
+                    return;
+                }
+                
+                animationId = requestAnimationFrame(drawFrame);
+            }
+            
+            isAnimating = true;
+            requestAnimationFrame(drawFrame);
+        }
+        
+        function startAnimation() {
+            if (isAnimating) return;
+            
+            isAnimating = true;
+            document.querySelector('button').disabled = true;
+            
+            document.getElementById('safeBg').style.opacity = '0';
+            document.getElementById('dangerBg').style.opacity = '0';
+            
+            animateCurve();
+            
+            setTimeout(() => {
+                document.querySelector('button').disabled = false;
+            }, 3500);
+        }
+        
+        function resetAnimation() {
+            isAnimating = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            document.getElementById('curvePoints').innerHTML = '';
+            document.getElementById('safeBg').style.opacity = '0';
+            document.getElementById('dangerBg').style.opacity = '0';
+            document.getElementById('safeZoneLabel').classList.remove('visible');
+            document.getElementById('dangerZoneLabel').classList.remove('visible');
+            document.getElementById('peakStar').classList.remove('visible');
+            const hedgeText = document.getElementById('hedgeText');
+            const peakArrow = document.getElementById('peakArrow');
+            if (hedgeText) hedgeText.setAttribute('opacity', '0');
+            if (peakArrow) peakArrow.style.opacity = '0';
+            
+            document.querySelector('button').disabled = false;
+        }
+        
+        window.addEventListener('load', () => {
+            setTimeout(startAnimation, 1000);
+        });
+    </script>
+</body>
+</html>
