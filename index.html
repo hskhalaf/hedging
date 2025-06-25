@@ -270,6 +270,20 @@
         .grid-item.success {
             background: #f8f8f8;
         }
+        /* Fix for Best-of-Poisson double border */
+        #bop-item.grid-item {
+            border: none !important;
+            border-top: 3px solid #000000 !important;
+            border-bottom: 4px solid #000000 !important;
+        }
+        @media (max-width: 768px) {
+            #bop-item.grid-item {
+                border: none !important;
+                border-top: 3px solid #000000 !important;
+                border-bottom: 4px solid #000000 !important;
+                padding: 20px !important;
+            }
+        }
         /* METHOD CARDS */
         .method-card {
             background: #ffffff;
@@ -429,6 +443,9 @@
         }
         /* RESPONSIVE */
         @media (max-width: 768px) {
+            .nav {
+                display: none !important;
+            }
             .header {
                 margin: 10px;
                 padding: 20px;
@@ -448,12 +465,34 @@
                 margin: 0 10px;
             }
             .container {
-                margin: 20px 10px;
+                margin: 20px 0;
+                padding: 0 15px !important;
+            }
+            section {
+                margin: 30px 0 !important;
+                padding: 0 !important;
             }
             .block, .demo-block {
-                max-width: 100% !important;
-                min-width: 100% !important;
-                margin: 20px 0 !important;
+                max-width: calc(100% - 30px) !important;
+                min-width: calc(100% - 30px) !important;
+                margin: 15px 15px !important;
+            }
+            .demo-block {
+                max-width: calc(100% - 30px) !important;
+                min-width: unset !important;
+                margin: 15px 15px !important;
+                width: calc(100% - 30px) !important;
+            }
+            #demo {
+                margin: 15px 15px !important;
+                display: flex !important;
+                justify-content: center !important;
+            }
+            #demo {
+                margin: 30px 0 !important;
+                padding: 0 15px !important;
+                display: block !important;
+                justify-content: unset !important;
             }
             .block-header {
                 font-size: 24px;
@@ -513,14 +552,22 @@
             }
             /* Demo chart responsiveness */
             .chart-container {
-                padding: 15px;
-                margin: 10px 0;
-                overflow-x: auto;
+                padding: 5px;
+                margin: 5px 0;
+                overflow: hidden;
+                max-width: 100%;
+                width: 100%;
             }
             #chart {
-                width: 100%;
-                height: 400px;
-                min-width: 600px;
+                width: 100% !important;
+                height: 250px !important;
+                min-width: unset !important;
+                max-width: 100% !important;
+            }
+            .demo-block {
+                max-width: 100% !important;
+                min-width: 100% !important;
+                margin: 10px 0 !important;
             }
             .demo-header {
                 font-size: 18px;
@@ -561,9 +608,21 @@
             }
             /* Mobile headline fix */
             .block-header.big-text[style*="2.8rem"] {
-                font-size: 1.8rem !important;
+                font-size: 1.6rem !important;
                 line-height: 1.2 !important;
-                padding: 15px !important;
+                padding: 12px !important;
+            }
+            /* Mobile font size adjustments */
+            .block-header.big-text[style*="2.3rem"] {
+                font-size: 1.4rem !important;
+                padding: 12px !important;
+            }
+            .block-content p {
+                font-size: 14px !important;
+                line-height: 1.4 !important;
+            }
+            .block-content h3 {
+                font-size: 16px !important;
             }
             .alert {
                 padding: 15px;
@@ -678,13 +737,14 @@
             margin: 10px 0 !important;
             padding: 20px !important;
         }
-        .grid-item {
+        .grid-item:not(:last-child) {
             border-right: none !important;
             border-bottom: 2px solid #000000 !important;
             padding: 20px !important;
         }
         .grid-item:last-child {
             border-bottom: none !important;
+            padding: 20px !important;
         }
     </style>
 </head>

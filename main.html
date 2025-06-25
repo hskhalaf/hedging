@@ -101,7 +101,7 @@
             <div class="block-content" style="display: flex; align-items: stretch; gap: 0; padding: 40px 40px 40px 40px;">
                 <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding-right: 40px;">
                     <h3>INEVITABILITY THEOREM</h3>
-                    <p>We derive exact conditions under which one of the four possible regimes (shown at right) is envitable for common inference-time schemes such as Best-of-n.</p>
+                    <p>We derive exact conditions under which one of the four possible regimes (shown on the right) is envitable for common inference-time schemes such as Best-of-n.</p>
                     <p><strong>Consequence:</strong> A unique hacking threshold θ<sup>†</sup> exists, and we have a principled way to find it!</p>                    
                 </div>
                 
@@ -153,21 +153,21 @@
       </div>
 
       <div class="block-content" style="padding: 0; margin-top: -20px;">
-        <div class="grid grid-3" style="border-top: none;">
-          <div class="grid-item" style="border-left: none;">
-                         <h3>BEST-OF-N</h3>
+        <div class="grid grid-3" style="border-top: none; border-bottom: none;">
+          <div class="grid-item" style="border-left: none; border-right: 2px solid #000000 !important;">
+                         <h3 style="text-align: center;">BEST-OF-N</h3>
              <p> 1. Draw <em>n</em> candidates <br> 2. Score them using proxy reward <br> 3. Select the one with the highest score.</p>
           </div>
   
-          <div class="grid-item">
-                         <h3>SOFT&nbsp;BoN</h3>
+          <div class="grid-item" style="border-left: none; border-right: 2px solid #000000 !important;">
+                         <h3 style="text-align: center;">SOFT&nbsp;BEST-OF-N</h3>
              <p> 1. Draw <em>n</em> candidates <br> 2. Score them using proxy reward <br> 3. Sample a response from a softmax over the scores using a temperature λ.</p>
           </div>
   
-                    <div class="grid-item highlight" style="border-right: none; background: #ffcccc;">
-                         <h3>BEST-OF-POISSON&nbsp;<small>[OURS]</small></h3>
-             <p> 1. Sample <em>n</em> from a Poisson distribution with mean μ <br> 2. Apply BoN using this n.</p>
-             <p style="margin-top: 10px;"><em><strong>NOVEL:</strong> Provably close to the optimal RLHF tilted distribution efficiently at inference time!</em></p>
+                    <div id="bop-item" style="background: #ffcccc; padding: 25px; position: relative; border-top: 3px solid #000000; border-bottom: 2px solid #000000;">
+                         <h3 style="text-align: center;">BEST-OF-POISSON&nbsp;<small>[OURS]</small></h3>
+             <p> 1. Sample <em>n</em> candidates <br> 2. Score them using proxy reward <br> 3. Apply BoN using this n.</p>
+             <p style="margin-top: 10px;"><em><strong>NOVEL:</strong> Provably close to the optimal RLHF tilted distribution & efficient at inference time!</em></p>
           </div>
         </div>
   
