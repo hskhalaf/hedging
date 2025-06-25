@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>REWARD HACKING IN LLMS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" 
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
         * {
@@ -337,6 +346,22 @@
             font-weight: 600;
             border: 1px solid #000000;
         }
+        
+        /* Curve drawing animation */
+        @keyframes drawCurve {
+            0% {
+                stroke-dashoffset: 200;
+            }
+            45% {
+                stroke-dashoffset: 0;
+            }
+            55% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: -200;
+            }
+        }
         .danger-text {
             color: #cc4444;
             font-weight: 700;
@@ -501,6 +526,29 @@
                 font-size: 18px;
                 padding: 15px;
             }
+            /* Fix for theory section animated diagram on mobile */
+            .block-content svg {
+                max-width: 100%;
+                height: auto;
+            }
+            /* Theory section mobile fix */
+            .block-content[style*="display: flex"] {
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 20px !important;
+                padding: 20px !important;
+            }
+            .block-content[style*="display: flex"] > div:first-child {
+                padding-right: 0 !important;
+                text-align: center;
+            }
+            .block-content[style*="display: flex"] > div:last-child {
+                flex: none !important;
+                height: 250px !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 300px;
+            }
             /* Typography adjustments */
             h2 {
                 font-size: 24px;
@@ -510,6 +558,12 @@
             }
             .big-text {
                 font-size: 18px;
+            }
+            /* Mobile headline fix */
+            .block-header.big-text[style*="2.8rem"] {
+                font-size: 1.8rem !important;
+                line-height: 1.2 !important;
+                padding: 15px !important;
             }
             .alert {
                 padding: 15px;
@@ -616,6 +670,21 @@
             margin-left: auto !important;
             margin-right: auto !important;
             display: block !important;
+        }
+        /* Methods section mobile fixes */
+        .grid-item.highlight {
+            background: #ffcccc !important;
+            border: 2px solid #cc4444 !important;
+            margin: 10px 0 !important;
+            padding: 20px !important;
+        }
+        .grid-item {
+            border-right: none !important;
+            border-bottom: 2px solid #000000 !important;
+            padding: 20px !important;
+        }
+        .grid-item:last-child {
+            border-bottom: none !important;
         }
     </style>
 </head>

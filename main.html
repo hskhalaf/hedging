@@ -3,8 +3,8 @@
       <div class="block danger">
         
         <!-- Centered headline -->
-        <div class="block-header big-text" style="text-align: center;">
-          ALL PROXY REWARDS ARE BAD… BUT SOME CAN BE MADE USEFUL!
+        <div class="block-header big-text" style="text-align: center; font-size: 2.8rem;">
+          ALL PROXY REWARDS ARE BAD… <br> BUT SOME CAN BE MADE USEFUL!
         </div>
   
         <div class="block-content">
@@ -15,7 +15,7 @@
           </div>
   
           <p><strong>Our contributions:</strong></p>
-          <p><strong>1.</strong> We mathematically formalise inference-time reward hacking and prove its inevitability (Theorem&nbsp;1).</p>
+          <p><strong>1.</strong> We mathematically formalise inference-time reward hacking and prove its inevitability.</p>
           <p><strong>2.</strong> We introduce <em>Best-of-Poisson</em>, which approximates the optimal tilted distribution with negligible KL gap.</p>
           <p><strong>3.</strong> We develop <em>HedgeTune</em>, a lightweight framework that finds optimal inference-time parameters.</p>
         </div>
@@ -23,9 +23,9 @@
     </section>
 
     <!-- INTERACTIVE DEMO -->
-    <section id="demo" style="display: flex; justify-content: center;">
+    <section id="demo" style="display: flex; justify-content: center; margin-top: -40px;">
         <div class="demo-block">
-            <div class="demo-header"> EXAMPLE OF REWARD HACKING</div>
+            <div class="block-header big-text" style="text-align: center; font-size: 2.3rem;">🎯 EXAMPLE OF REWARD HACKING</div>
             <div class="demo-content">
                 <div class="chart-container">
                     <svg width="850" height="500" id="chart" style="background: #fcfcfc;" viewBox="0 0 850 500" preserveAspectRatio="xMidYMid meet">
@@ -82,11 +82,14 @@
                     <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
                         <button onclick="startAnimation()" class="btn" style="padding: 10px 20px; font-size: 12px;">START</button>
                         <button onclick="resetAnimation()" class="btn secondary" style="padding: 10px 20px; font-size: 12px;">RESET</button>
-                    </div>
+                                        </div>
                 </div>
-                <div class="alert warning">
-                    <strong>WATCH:</strong> As optimization strength increases, true reward first improves then COLLAPSES. The peak is your hacking threshold. 
-                </div>
+                <p style="text-align: center; margin-top: 40px;">
+                    <strong>WATCH:</strong> As we optimize harder (e.g., increase the number of samples n in Best-of-n), true reward first improves then COLLAPSES. The peak is your <span class="highlight-text"> HACKING THRESHOLD</span>. 
+                </p>
+                <p style="text-align: center; margin-top: 10px;">
+                    <strong>GOAL:</strong> Find this <span class="highlight-text"> HACKING THRESHOLD</span> by <span style="background: #ff5555; color: #ffffff; padding: 2px 6px; font-weight: 600; border: 1px solid #cc4444;">HEDGING</span> on the proxy reward!
+                </p>
             </div>
         </div>
     </section>
@@ -94,99 +97,96 @@
     <!-- THEORY -->
     <section id="theory">
         <div class="block">
-            <div class="block-header big-text" style="text-align: center; font-size: 2.3rem;">🔬 THEORETICAL RESULTS</div>
-            <div class="block-content">
-                <div class="grid grid-2">
-                    <div class="grid-item">
-                        <h3>INEVITABILITY THEOREM</h3>
-                        <p>We <span class="highlight-text">PROVE</span> exact conditions under which reward hacking is inevitable for common mechanisms like Best-of-n.</p>
-                    </div>
-                    <div class="grid-item highlight">
-                        <h3>HACKING THRESHOLD</h3>
-                        <p>There exists a unique optimal stopping point θ† where proxy optimization should cease.</p>
-                        <p class="danger-text">BEYOND THIS POINT = GUARANTEED DEGRADATION </p>
-                    </div>
+            <div class="block-header big-text" style="text-align: center; font-size: 2.3rem;">REWARD HACKING IS INEVITABLE</div>
+            <div class="block-content" style="display: flex; align-items: stretch; gap: 0; padding: 40px 40px 40px 40px;">
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding-right: 40px;">
+                    <h3>INEVITABILITY THEOREM</h3>
+                    <p>We derive exact conditions under which one of the four possible regimes (shown at right) is envitable for common inference-time schemes such as Best-of-n.</p>
+                    <p><strong>Consequence:</strong> A unique hacking threshold θ<sup>†</sup> exists, and we have a principled way to find it!</p>                    
+                </div>
+                
+                <div style="flex: 0 0 320px; height: 320px; margin: -40px -40px -40px 0;">
+                    <svg viewBox="0 0 400 400" style="width: 100%; height: 100%; background: #ffffff; display: block;">
+                        <!-- Dividers -->
+                        <line x1="0" y1="0" x2="0" y2="400" stroke="#000000" stroke-width="2" />
+                        <line x1="200" y1="0" x2="200" y2="400" stroke="#000000" stroke-width="2" />
+                        <line x1="0" y1="200" x2="400" y2="200" stroke="#000000" stroke-width="2" />
+                        
+                        <!-- Top Left Quadrant - Monotonically Increasing -->
+                        <g>
+                            <line x1="50" y1="50" x2="50" y2="150" stroke="#666666" stroke-width="1" />
+                            <line x1="50" y1="150" x2="150" y2="150" stroke="#666666" stroke-width="1" />
+                            <path d="M 60 140 Q 85 105 110 80 Q 125 65 140 50" fill="none" stroke="#000000" stroke-width="4" stroke-dasharray="200" stroke-dashoffset="200" stroke-linecap="round" style="animation: drawCurve 4s ease-in-out infinite;" />
+                        </g>
+                        
+                        <!-- Top Right Quadrant - Concave (up then down) - HACKING -->
+                        <g>
+                            <line x1="250" y1="50" x2="250" y2="150" stroke="#666666" stroke-width="1" />
+                            <line x1="250" y1="150" x2="350" y2="150" stroke="#666666" stroke-width="1" />
+                            <path d="M 260 140 Q 310 40 340 140" fill="none" stroke="#cc4444" stroke-width="4" stroke-dasharray="200" stroke-dashoffset="200" stroke-linecap="round" style="animation: drawCurve 4s ease-in-out infinite;" />
+                        </g>
+                        
+                        <!-- Bottom Left Quadrant - Convex (down then up) -->
+                        <g>
+                            <line x1="50" y1="250" x2="50" y2="350" stroke="#666666" stroke-width="1" />
+                            <line x1="50" y1="350" x2="150" y2="350" stroke="#666666" stroke-width="1" />
+                            <path d="M 60 280 Q 110 360 140 280" fill="none" stroke="#000000" stroke-width="4" stroke-dasharray="200" stroke-dashoffset="200" stroke-linecap="round" style="animation: drawCurve 4s ease-in-out infinite;" />
+                        </g>
+                        
+                        <!-- Bottom Right Quadrant - Monotonically Decreasing -->
+                        <g>
+                            <line x1="250" y1="250" x2="250" y2="350" stroke="#666666" stroke-width="1" />
+                            <line x1="250" y1="350" x2="350" y2="350" stroke="#666666" stroke-width="1" />
+                            <path d="M 260 260 Q 285 285 310 310 Q 325 325 340 340" fill="none" stroke="#000000" stroke-width="4" stroke-dasharray="200" stroke-dashoffset="200" stroke-linecap="round" style="animation: drawCurve 4s ease-in-out infinite;" />
+                        </g>
+                    </svg>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- METHODS -->
-    <section id="methods">
-        <div class="block">
-            <div class="block-header big-text" style="text-align: center; font-size: 2.3rem;">⚡ METHODS & SOLUTIONS</div>
-            <div class="block-content">
-                <div class="grid grid-3">
-                    <div class="grid-item">
-                        <h3>BEST-OF-N (BON)</h3>
-                        <p>Sample N responses, select highest proxy score.</p>
-                        <div class="formula">X_BoN = arg max r_p(X_i)</div>
-                    </div>
-                    <div class="grid-item">
-                        <h3>SOFT BEST-OF-N (SBON)</h3>
-                        <p>Temperature-scaled softmax over candidates.</p>
-                        <div class="formula">P(Z=i) ∝ exp(λr_p(X_i))</div>
-                    </div>
-                    <div class="grid-item highlight">
-                        <h3>BEST-OF-POISSON (BOP) [OURS]</h3>
-                        <p><span class="highlight-text">NOVEL:</span> Poisson-distributed sample count.</p>
-                        <div class="formula">n ~ Poisson(μ)<br>KL_gap ≤ 7×10^{-3}</div>
-                    </div>
-                </div>
-                <div class="alert success">
-                    <strong>HEDGETUNE ALGORITHM:</strong> Automatically finds optimal parameters to avoid hacking regime.
-                </div>
-                <div class="code">
-<strong>HEDGETUNE:</strong>
-1. COMPUTE score function ψ(x, θ)
-2. DEFINE residual R(θ) = E[r_t(x)ψ(x, θ)]  
-3. SOLVE R(θ*) = 0 using root-finding
-4. RETURN optimal parameter θ*
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- METHODS -->
+<section id="methods">
+    <div class="block">
+              <div class="block-header big-text" style="text-align:center;font-size:2.3rem;">
+        HEDGING CAN MITIGATE INFERENCE-TIME HACKING
+      </div>
 
-    <!-- RESULTS -->
-    <section id="results">
-        <div class="block">
-            <div class="block-header big-text" style="text-align: center; font-size: 2.3rem;">📊 EXPERIMENTAL RESULTS</div>
-            <div class="block-content">
-                <div class="grid grid-3">
-                    <div class="grid-item success">
-                        <h3>SYNTHETIC</h3>
-                        <p class="big-text success-text">+10%</p>
-                        <p>reward improvement over greedy BoN when proxy miscalibrated on top 5%</p>
-                    </div>
-                    <div class="grid-item success">
-                        <h3>REAL-WORLD</h3>
-                        <p class="big-text success-text">VALIDATED</p>
-                        <p>on AlpacaRM with varying dataset sizes (10k-80k)</p>
-                    </div>
-                    <div class="grid-item success">
-                        <h3>EFFICIENCY</h3>
-                        <p class="big-text success-text">MINIMAL</p>
-                        <p>computational overhead compared to standard BoN</p>
-                    </div>
-                </div>
-                <div class="alert warning">
-                    <strong>CRITICAL FINDING:</strong> Even 5% proxy miscalibration at the top leads to significant hacking at n ≈ 50
-                </div>
-                <div class="grid grid-2">
-                    <div class="grid-item">
-                        <h3>BEFORE HEDGING</h3>
-                        <p class="danger-text">• Proxy reward ↗️ True reward ↘️</p>
-                        <p class="danger-text">• Winner's curse dominates</p>
-                        <p class="danger-text">• Performance degrades</p>
-                    </div>
-                    <div class="grid-item highlight">
-                        <h3>AFTER HEDGING</h3>
-                        <p class="success-text">• Optimal threshold found</p>
-                        <p class="success-text">• True reward maximized</p>
-                        <p class="success-text">• Safe exploitation achieved</p>
-                    </div>
-                </div>
-            </div>
+      <div class="block-content" style="padding: 0; margin-top: -20px;">
+        <div class="grid grid-3" style="border-top: none;">
+          <div class="grid-item" style="border-left: none;">
+                         <h3>BEST-OF-N</h3>
+             <p> 1. Draw <em>n</em> candidates <br> 2. Score them using proxy reward <br> 3. Select the one with the highest score.</p>
+          </div>
+  
+          <div class="grid-item">
+                         <h3>SOFT&nbsp;BoN</h3>
+             <p> 1. Draw <em>n</em> candidates <br> 2. Score them using proxy reward <br> 3. Sample a response from a softmax over the scores using a temperature λ.</p>
+          </div>
+  
+                    <div class="grid-item highlight" style="border-right: none; background: #ffcccc;">
+                         <h3>BEST-OF-POISSON&nbsp;<small>[OURS]</small></h3>
+             <p> 1. Sample <em>n</em> from a Poisson distribution with mean μ <br> 2. Apply BoN using this n.</p>
+             <p style="margin-top: 10px;"><em><strong>NOVEL:</strong> Provably close to the optimal RLHF tilted distribution efficiently at inference time!</em></p>
+          </div>
         </div>
-    </section>
+  
+        <div style="margin-top: 0.5rem; margin-left: 40px; padding: 5px 15px 15px 5px;">
+          <strong>HEDGETUNE:</strong> An efficient algorithm for finding the optimal inference-time parameter θ<sup>†</sup> for BoN, SBoN, and BoP. We only require <strong> samples </strong> from the proxy and true rewards!<br><br>
+          1. Build score ψ(u, θ) for the chosen method<br>
+          2. Define residual R(θ) = E[ r_true(u) · ψ(u, θ) ]<br>
+          3. Find θ<sup>†</sup>, the root of the residual R(θ) using bisection or Newton's method<br>
+        </div>
+      </div>
+    </div>
+  </section>
+  </section>
+
+  <!-- Bottom note -->
+  <div style="text-align: center; margin-top: 20px; padding: 10px;">
+    <p style="font-style: italic; color: #666666; font-size: 1.1rem;">
+      Check our <a href="https://arxiv.org/abs/2506.19248" target="_blank" rel="noopener noreferrer" style="color: #000000; text-decoration: underline;">paper</a> to see how hedging mitigates hacking in real-world settings!
+    </p>
+  </div>
+
 </div> 
