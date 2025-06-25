@@ -24,72 +24,66 @@
 
     <!-- INTERACTIVE DEMO -->
     <section id="demo" style="display: flex; justify-content: center; margin-top: -40px;">
-        <div class="demo-block">
-            <div class="block-header big-text" style="text-align: center; font-size: 2.3rem;">🎯 EXAMPLE OF REWARD HACKING</div>
-            <div class="demo-content">
-                <div class="chart-container">
-                    <svg width="850" height="500" id="chart" style="background: #fcfcfc;" viewBox="0 0 850 500" preserveAspectRatio="xMidYMid meet">
-                        <defs>
-                            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-                                <polygon points="0 0, 8 3, 0 6" fill="#000000"/>
-                            </marker>
-                        </defs>
-                        <text id="hedgeText" x="425" y="28" font-family="JetBrains Mono, monospace" font-size="20" font-weight="700" fill="#000000" text-anchor="middle" opacity="0" style="transition: opacity 0.8s ease;">YOU CAN HEDGE TO FIND IT!</text>
-                        <g id="peakArrow" style="opacity: 0; transition: opacity 0.8s ease;">
-                            <path id="arrowPath" d="" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-                        </g>
-                        <rect id="safeBg" x="80" y="50" width="" height="370" fill="#00ff00" opacity="0"/>
-                        <rect id="dangerBg" x="" y="50" width="" height="370" fill="#ff0000" opacity="0"/>
-                        <line x1="80" y1="50" x2="80" y2="420" stroke="#000000" stroke-width="2"/>
-                        <line x1="80" y1="420" x2="830" y2="420" stroke="#000000" stroke-width="2"/>
-                        <text id="safeZoneLabel" x="" y="" font-family="JetBrains Mono, monospace" font-size="18" font-weight="600" fill="#00aa00" text-anchor="middle" opacity="0" style="transition: opacity 0.3s ease;">safe</text>
-                        <text id="dangerZoneLabel" x="" y="" font-family="JetBrains Mono, monospace" font-size="18" font-weight="600" fill="#cc0000" text-anchor="middle" opacity="0" style="transition: opacity 0.3s ease;">danger!</text>
-                        <text x="25" y="240" font-family="JetBrains Mono, monospace" font-size="14" font-weight="500" fill="#000000" text-anchor="middle" transform="rotate(-90, 25, 240)">true reward</text>
-                        <text x="465" y="480" font-family="JetBrains Mono, monospace" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">kl divergence to the base model</text>
-                        <!-- Y-axis ticks -->
-                        <line x1="75" y1="420" x2="85" y2="420" stroke="#666666" stroke-width="1"/>
-                        <text x="70" y="424" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">0</text>
-                        <line x1="75" y1="320" x2="85" y2="320" stroke="#666666" stroke-width="1"/>
-                        <text x="70" y="324" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">0.25</text>
-                        <line x1="75" y1="220" x2="85" y2="220" stroke="#666666" stroke-width="1"/>
-                        <text x="70" y="224" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">0.5</text>
-                        <line x1="75" y1="120" x2="85" y2="120" stroke="#666666" stroke-width="1"/>
-                        <text x="70" y="124" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">0.75</text>
-                        <line x1="75" y1="50" x2="85" y2="50" stroke="#666666" stroke-width="1"/>
-                        <text x="70" y="54" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="end">1.0</text>
-                        <!-- X-axis ticks -->
-                        <line x1="80" y1="420" x2="80" y2="435" stroke="#666666" stroke-width="1"/>
-                        <text x="80" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">0</text>
-                        <line x1="187" y1="420" x2="187" y2="435" stroke="#666666" stroke-width="1"/>
-                        <text x="187" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">0.25</text>
-                        <line x1="294" y1="420" x2="294" y2="435" stroke="#666666" stroke-width="1"/>
-                        <text x="294" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">0.5</text>
-                        <line x1="401" y1="420" x2="401" y2="435" stroke="#666666" stroke-width="1"/>
-                        <text x="401" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">0.75</text>
-                        <line x1="509" y1="420" x2="509" y2="435" stroke="#666666" stroke-width="1"/>
-                        <text x="509" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">1.0</text>
-                        <line x1="616" y1="420" x2="616" y2="435" stroke="#666666" stroke-width="1"/>
-                        <text x="616" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">1.25</text>
-                        <line x1="723" y1="420" x2="723" y2="435" stroke="#666666" stroke-width="1"/>
-                        <text x="723" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">1.5</text>
-                        <line x1="830" y1="420" x2="830" y2="435" stroke="#666666" stroke-width="1"/>
-                        <text x="830" y="450" font-family="JetBrains Mono, monospace" font-size="11" fill="#666666" text-anchor="middle">1.75</text>
-                        <path id="curve" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" d=""/>
-                        <g id="peakStar" style="opacity: 0; transition: opacity 0.3s ease;">
-                            <polygon points="0,-15 4.5,-4.5 15,-4.5 6,3 10.5,13.5 0,7.5 -10.5,13.5 -6,3 -15,-4.5 -4.5,-4.5" fill="#ffcc00" stroke="#ff9900" stroke-width="2" transform="translate(500, 95)"/>
-                        </g>
-                    </svg>
-                    <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                        <button onclick="startAnimation()" class="btn" style="padding: 10px 20px; font-size: 12px;">START</button>
-                        <button onclick="resetAnimation()" class="btn secondary" style="padding: 10px 20px; font-size: 12px;">RESET</button>
-                                        </div>
-                </div>
-                <p style="text-align: center; margin-top: 40px;">
-                    <strong>WATCH:</strong> As we optimize harder (e.g., increase the number of samples n in Best-of-n), true reward first improves then COLLAPSES. The peak is your <span class="highlight-text"> HACKING THRESHOLD</span>. 
-                </p>
-                <p style="text-align: center; margin-top: 10px;">
-                    <strong>GOAL:</strong> Find this <span class="highlight-text"> HACKING THRESHOLD</span> by <span style="background: #ff5555; color: #ffffff; padding: 2px 6px; font-weight: 600; border: 1px solid #cc4444;">HEDGING</span> on the proxy reward!
-                </p>
+        <div class="container" style="background: #fff; padding: 32px 32px 20px 32px; border-radius: 3px; border: 2px solid #000; max-width: 900px; box-shadow: 8px 8px 0px #000;">
+            <div class="header">
+                <h1 class="main-title demo-title">Inference-time Reward Hacking</h1>
+            </div>
+            <div class="chart-container" style="background: #fff; border-radius: 0px; padding: 24px; border: 2px solid #000; margin-top: 20px;">
+                <svg width="850" height="500" id="chart" viewBox="0 0 850 500" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#000000"/>
+                        </marker>
+                    </defs>
+                    <text id="hedgeText" x="425" y="28" font-family="JetBrains Mono, monospace" font-size="24" font-weight="700" fill="#000000" text-anchor="middle" opacity="0" style="transition: opacity 0.8s ease;"><tspan font-style="italic">YOU CAN </tspan><tspan id="hedgeTwinkle" fill="#e67c30" font-style="normal">HEDGE</tspan><tspan font-style="italic"> TO FIND IT!</tspan></text>
+                    <g id="peakArrow" style="opacity: 0; transition: opacity 0.8s ease;">
+                        <path id="arrowPath" d="" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    </g>
+                    <rect id="safeBg" x="80" y="50" width="" height="370" class="background-safe" opacity="0" style="fill: #00ff00; opacity: 0.1;"/>
+                    <rect id="dangerBg" x="" y="50" width="" height="370" class="background-danger" opacity="0" style="fill: #ff0000; opacity: 0.1;"/>
+                    <line x1="80" y1="50" x2="80" y2="420" class="axes" style="stroke: #000; stroke-width: 2;"/>
+                    <line x1="80" y1="420" x2="830" y2="420" class="axes" style="stroke: #000; stroke-width: 2;"/>
+                    <text id="safeZoneLabel" x="" y="" class="zone-label safe-label" text-anchor="middle" style="font-weight: 600; font-family: 'JetBrains Mono', monospace; opacity: 0; font-size: 20px; fill: #00aa00;">safe</text>
+                    <text id="dangerZoneLabel" x="" y="" class="zone-label danger-label" text-anchor="middle" style="font-weight: 600; font-family: 'JetBrains Mono', monospace; opacity: 0; font-size: 20px; fill: #cc0000;">danger!</text>
+                    <text x="25" y="240" class="axis-label" text-anchor="middle" transform="rotate(-90, 25, 240)" style="font-size: 16px; font-weight: 500; fill: #000; font-family: 'JetBrains Mono', monospace;">true reward</text>
+                    <text x="465" y="480" class="axis-label" text-anchor="middle" style="font-size: 16px; font-weight: 500; fill: #000; font-family: 'JetBrains Mono', monospace;">number of samples n</text>
+                    <!-- Y-axis ticks -->
+                    <line x1="75" y1="420" x2="85" y2="420" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="70" y="424" class="tick-label" text-anchor="end" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">0</text>
+                    <line x1="75" y1="320" x2="85" y2="320" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="70" y="324" class="tick-label" text-anchor="end" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">0.25</text>
+                    <line x1="75" y1="220" x2="85" y2="220" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="70" y="224" class="tick-label" text-anchor="end" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">0.5</text>
+                    <line x1="75" y1="120" x2="85" y2="120" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="70" y="124" class="tick-label" text-anchor="end" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">0.75</text>
+                    <line x1="75" y1="50" x2="85" y2="50" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="70" y="54" class="tick-label" text-anchor="end" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">1.0</text>
+                    <!-- X-axis ticks -->
+                    <line x1="80" y1="420" x2="80" y2="435" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="80" y="450" class="tick-label" text-anchor="middle" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">1</text>
+                    <line x1="187" y1="420" x2="187" y2="435" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="187" y="450" class="tick-label" text-anchor="middle" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">4</text>
+                    <line x1="294" y1="420" x2="294" y2="435" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="294" y="450" class="tick-label" text-anchor="middle" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">8</text>
+                    <line x1="401" y1="420" x2="401" y2="435" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="401" y="450" class="tick-label" text-anchor="middle" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">12</text>
+                    <line x1="509" y1="420" x2="509" y2="435" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="509" y="450" class="tick-label" text-anchor="middle" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">16</text>
+                    <line x1="616" y1="420" x2="616" y2="435" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="616" y="450" class="tick-label" text-anchor="middle" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">20</text>
+                    <line x1="723" y1="420" x2="723" y2="435" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="723" y="450" class="tick-label" text-anchor="middle" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">24</text>
+                    <line x1="830" y1="420" x2="830" y2="435" class="tick" style="stroke: #666; stroke-width: 1;"/>
+                    <text x="830" y="450" class="tick-label" text-anchor="middle" style="font-size: 11px; fill: #666; font-family: 'JetBrains Mono', monospace; font-weight: 400;">28</text>
+                    <g id="curvePoints"></g>
+                    <g id="peakStar" class="peak-star">
+                        <polygon points="0,-15 4.5,-4.5 15,-4.5 6,3 10.5,13.5 0,7.5 -10.5,13.5 -6,3 -15,-4.5 -4.5,-4.5" fill="#ffcc00" stroke="#ff9900" stroke-width="2"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="controls" style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; position: static; bottom: auto; left: auto; transform: none;">
+                <button onclick="startAnimation()">start</button>
+                <button onclick="resetAnimation()">reset</button>
             </div>
         </div>
     </section>
@@ -189,3 +183,215 @@
   </div>
 
 </div> 
+
+<script>
+let animationId;
+let isAnimating = false;
+function generateCurvePoints() {
+    const points = [];
+    const numPoints = 18; // Even fewer points
+    let peakPoint = null;
+    let maxY = -Infinity;
+    for (let i = 0; i <= numPoints; i++) {
+        const t = i / numPoints;
+        const x = 80 + (t * 1.75) * (750 / 1.75);
+        const scaledT = t * 1.75;
+        const funcT = scaledT / 1.75;
+        let y = -1.5 * Math.pow(funcT - 0.6, 2) + 0.9;
+        y = Math.max(0, Math.min(1, y));
+        const svgY = 420 - y * 370;
+        if (y > maxY) {
+            maxY = y;
+            peakPoint = { x, y: svgY, t: scaledT, index: i };
+        }
+        points.push({ x, y: svgY, t: scaledT });
+    }
+    return { points, peakPoint };
+}
+function animateCurve() {
+    const curvePoints = document.getElementById('curvePoints');
+    const safeBg = document.getElementById('safeBg');
+    const dangerBg = document.getElementById('dangerBg');
+    const peakStar = document.getElementById('peakStar');
+    const hedgeText = document.getElementById('hedgeText');
+    const peakArrow = document.getElementById('peakArrow');
+    const { points, peakPoint } = generateCurvePoints();
+    safeBg.setAttribute('width', peakPoint.x - 80);
+    dangerBg.setAttribute('x', peakPoint.x);
+    dangerBg.setAttribute('width', 830 - peakPoint.x);
+    const safeLabel = document.getElementById('safeZoneLabel');
+    const dangerLabel = document.getElementById('dangerZoneLabel');
+    const safeX = 80 + (peakPoint.x - 80) / 2;
+    const safeY = 275;
+    safeLabel.setAttribute('x', safeX);
+    safeLabel.setAttribute('y', safeY);
+    const dangerX = peakPoint.x + (830 - peakPoint.x) / 2;
+    const dangerY = 275;
+    dangerLabel.setAttribute('x', dangerX);
+    dangerLabel.setAttribute('y', dangerY);
+    curvePoints.innerHTML = '';
+    peakStar.classList.remove('visible');
+    if (hedgeText) hedgeText.setAttribute('opacity', '0');
+    if (peakArrow) peakArrow.style.opacity = '0';
+    safeLabel.classList.remove('visible');
+    dangerLabel.classList.remove('visible');
+    let startTime = null;
+    const total = points.length - 1;
+    const duration = 2500;
+    function drawFrame(ts) {
+        if (!isAnimating) return;
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+        let t = Math.min(elapsed / duration, 1);
+        const currentPoint = Math.floor(t * total);
+        // Add dots one by one
+        if (currentPoint < points.length) {
+            const existingDot = document.getElementById(`dot-${currentPoint}`);
+            if (!existingDot) {
+                const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                dot.setAttribute('id', `dot-${currentPoint}`);
+                dot.setAttribute('cx', points[currentPoint].x);
+                dot.setAttribute('cy', points[currentPoint].y);
+                dot.setAttribute('r', '6');
+                dot.setAttribute('fill', '#000000');
+                dot.setAttribute('opacity', '0.7');
+                curvePoints.appendChild(dot);
+            }
+        }
+        if (currentPoint > 5 && !safeLabel.classList.contains('visible')) {
+            safeLabel.classList.add('visible');
+            safeBg.style.opacity = '0.08';
+        }
+        if (currentPoint > peakPoint.index && !dangerLabel.classList.contains('visible')) {
+            dangerLabel.classList.add('visible');
+            dangerBg.style.opacity = '0.08';
+        }
+        if (currentPoint >= total) {
+            const starPolygon = peakStar.querySelector('polygon');
+            starPolygon.setAttribute('transform', `translate(${peakPoint.x}, ${peakPoint.y})`);
+            setTimeout(() => {
+                peakStar.classList.add('visible');
+                // Show text and arrow together with smooth transition
+                setTimeout(() => {
+                    if (hedgeText) hedgeText.setAttribute('opacity', '1');
+                    // Draw arrow from text to star
+                    if (peakArrow) {
+                        const arrowPath = document.getElementById('arrowPath');
+                        const startX = 340;
+                        const startY = 40;
+                        const endX = peakPoint.x - 40;
+                        const endY = peakPoint.y - 15;
+                        arrowPath.setAttribute('d', `M ${startX} ${startY} Q ${(startX + endX) / 2 - 60} ${(startY + endY) / 2 + 20} ${endX} ${endY}`);
+                        // Show arrow slightly after text starts appearing
+                        setTimeout(() => {
+                            peakArrow.style.opacity = '1';
+                        }, 200);
+                    }
+                }, 400);
+            }, 200);
+            isAnimating = false;
+            return;
+        }
+        animationId = requestAnimationFrame(drawFrame);
+    }
+    isAnimating = true;
+    requestAnimationFrame(drawFrame);
+}
+function startAnimation() {
+    if (isAnimating) return;
+    isAnimating = true;
+    document.querySelector('button').disabled = true;
+    document.getElementById('safeBg').style.opacity = '0';
+    document.getElementById('dangerBg').style.opacity = '0';
+    animateCurve();
+    setTimeout(() => {
+        document.querySelector('button').disabled = false;
+    }, 3500);
+}
+function resetAnimation() {
+    isAnimating = false;
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+    }
+    document.getElementById('curvePoints').innerHTML = '';
+    document.getElementById('safeBg').style.opacity = '0';
+    document.getElementById('dangerBg').style.opacity = '0';
+    document.getElementById('safeZoneLabel').classList.remove('visible');
+    document.getElementById('dangerZoneLabel').classList.remove('visible');
+    document.getElementById('peakStar').classList.remove('visible');
+    const hedgeText = document.getElementById('hedgeText');
+    const peakArrow = document.getElementById('peakArrow');
+    if (hedgeText) hedgeText.setAttribute('opacity', '0');
+    if (peakArrow) peakArrow.style.opacity = '0';
+    document.querySelector('button').disabled = false;
+}
+window.addEventListener('load', () => {
+    setTimeout(startAnimation, 1000);
+});
+</script> 
+
+<style>
+.peak-star {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.peak-star.visible {
+    opacity: 1;
+}
+.main-title.demo-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.01em;
+    font-family: 'JetBrains Mono', monospace;
+}
+.chart-container {
+    background: #fff;
+    border-radius: 0px;
+    padding: 24px;
+    border: 2px solid #000;
+    margin-top: 20px;
+    width: 850px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.chart-container svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.controls {
+    text-align: center;
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    position: static;
+    bottom: auto;
+    left: auto;
+    transform: none;
+}
+.controls button {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+    background: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 0px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.controls button:hover {
+    background: #333333;
+}
+.controls button:disabled {
+    background: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+}
+</style> 

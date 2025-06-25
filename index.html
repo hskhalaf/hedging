@@ -775,130 +775,157 @@
     }
     includeHTML();
     </script>
-<script>
-let animationId;
-let isAnimating = false;
-
-function generateCurvePoints() {
-    const points = [];
-    const numPoints = 150;
-    let peakPoint = null;
-    let maxY = -Infinity;
-    for (let i = 0; i <= numPoints; i++) {
-        const t = i / numPoints;
-        const x = 80 + (t * 1.75) * (750 / 1.75);
-        const scaledT = t * 1.75;
-        const funcT = scaledT / 1.75;
-        let y = -1.5 * Math.pow(funcT - 0.6, 2) + 0.9;
-        y = Math.max(0, Math.min(1, y));
-        const svgY = 420 - y * 370;
-        if (y > maxY) {
-            maxY = y;
-            peakPoint = { x, y: svgY, t: scaledT, index: i };
-        }
-        points.push({ x, y: svgY, t: scaledT });
+    <script>
+    // Animation script from bon.html for interactive demo
+    function bonDemoInit() {
+      let animationId;
+      let isAnimating = false;
+      function generateCurvePoints() {
+          const points = [];
+          const numPoints = 18; // Even fewer points
+          let peakPoint = null;
+          let maxY = -Infinity;
+          for (let i = 0; i <= numPoints; i++) {
+              const t = i / numPoints;
+              const x = 80 + (t * 1.75) * (750 / 1.75);
+              const scaledT = t * 1.75;
+              const funcT = scaledT / 1.75;
+              let y = -1.5 * Math.pow(funcT - 0.6, 2) + 0.9;
+              y = Math.max(0, Math.min(1, y));
+              const svgY = 420 - y * 370;
+              if (y > maxY) {
+                  maxY = y;
+                  peakPoint = { x, y: svgY, t: scaledT, index: i };
+              }
+              points.push({ x, y: svgY, t: scaledT });
+          }
+          return { points, peakPoint };
+      }
+      function animateCurve() {
+          const curvePoints = document.getElementById('curvePoints');
+          const safeBg = document.getElementById('safeBg');
+          const dangerBg = document.getElementById('dangerBg');
+          const peakStar = document.getElementById('peakStar');
+          const hedgeText = document.getElementById('hedgeText');
+          const peakArrow = document.getElementById('peakArrow');
+          const { points, peakPoint } = generateCurvePoints();
+          safeBg.setAttribute('width', peakPoint.x - 80);
+          dangerBg.setAttribute('x', peakPoint.x);
+          dangerBg.setAttribute('width', 830 - peakPoint.x);
+          const safeLabel = document.getElementById('safeZoneLabel');
+          const dangerLabel = document.getElementById('dangerZoneLabel');
+          const safeX = 80 + (peakPoint.x - 80) / 2;
+          const safeY = 275;
+          safeLabel.setAttribute('x', safeX);
+          safeLabel.setAttribute('y', safeY);
+          const dangerX = peakPoint.x + (830 - peakPoint.x) / 2;
+          const dangerY = 275;
+          dangerLabel.setAttribute('x', dangerX);
+          dangerLabel.setAttribute('y', dangerY);
+          curvePoints.innerHTML = '';
+          peakStar.classList.remove('visible');
+          if (hedgeText) hedgeText.setAttribute('opacity', '0');
+          if (peakArrow) peakArrow.style.opacity = '0';
+          safeLabel.classList.remove('visible');
+          dangerLabel.classList.remove('visible');
+          let startTime = null;
+          const total = points.length - 1;
+          const duration = 2500;
+          function drawFrame(ts) {
+              if (!isAnimating) return;
+              if (!startTime) startTime = ts;
+              const elapsed = ts - startTime;
+              let t = Math.min(elapsed / duration, 1);
+              const currentPoint = Math.floor(t * total);
+              // Add dots one by one
+              if (currentPoint < points.length) {
+                  const existingDot = document.getElementById(`dot-${currentPoint}`);
+                  if (!existingDot) {
+                      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                      dot.setAttribute('id', `dot-${currentPoint}`);
+                      dot.setAttribute('cx', points[currentPoint].x);
+                      dot.setAttribute('cy', points[currentPoint].y);
+                      dot.setAttribute('r', '6');
+                      dot.setAttribute('fill', '#000000');
+                      dot.setAttribute('opacity', '0.7');
+                      curvePoints.appendChild(dot);
+                  }
+              }
+              if (currentPoint > 5 && !safeLabel.classList.contains('visible')) {
+                  safeLabel.classList.add('visible');
+                  safeBg.style.opacity = '0.08';
+              }
+              if (currentPoint > peakPoint.index && !dangerLabel.classList.contains('visible')) {
+                  dangerLabel.classList.add('visible');
+                  dangerBg.style.opacity = '0.08';
+              }
+              if (currentPoint >= total) {
+                  const starPolygon = peakStar.querySelector('polygon');
+                  starPolygon.setAttribute('transform', `translate(${peakPoint.x}, ${peakPoint.y})`);
+                  setTimeout(() => {
+                      peakStar.classList.add('visible');
+                      // Show text and arrow together with smooth transition
+                      setTimeout(() => {
+                          if (hedgeText) hedgeText.setAttribute('opacity', '1');
+                          // Draw arrow from text to star
+                          if (peakArrow) {
+                              const arrowPath = document.getElementById('arrowPath');
+                              const startX = 340;
+                              const startY = 40;
+                              const endX = peakPoint.x - 40;
+                              const endY = peakPoint.y - 15;
+                              arrowPath.setAttribute('d', `M ${startX} ${startY} Q ${(startX + endX) / 2 - 60} ${(startY + endY) / 2 + 20} ${endX} ${endY}`);
+                              // Show arrow slightly after text starts appearing
+                              setTimeout(() => {
+                                  peakArrow.style.opacity = '1';
+                              }, 200);
+                          }
+                      }, 400);
+                  }, 200);
+                  isAnimating = false;
+                  return;
+              }
+              animationId = requestAnimationFrame(drawFrame);
+          }
+          isAnimating = true;
+          requestAnimationFrame(drawFrame);
+      }
+      window.startAnimation = function() {
+          if (isAnimating) return;
+          isAnimating = true;
+          document.querySelector('button').disabled = true;
+          document.getElementById('safeBg').style.opacity = '0';
+          document.getElementById('dangerBg').style.opacity = '0';
+          animateCurve();
+          setTimeout(() => {
+              document.querySelector('button').disabled = false;
+          }, 3500);
+      }
+      window.resetAnimation = function() {
+          isAnimating = false;
+          if (animationId) {
+              cancelAnimationFrame(animationId);
+          }
+          document.getElementById('curvePoints').innerHTML = '';
+          document.getElementById('safeBg').style.opacity = '0';
+          document.getElementById('dangerBg').style.opacity = '0';
+          document.getElementById('safeZoneLabel').classList.remove('visible');
+          document.getElementById('dangerZoneLabel').classList.remove('visible');
+          document.getElementById('peakStar').classList.remove('visible');
+          const hedgeText = document.getElementById('hedgeText');
+          const peakArrow = document.getElementById('peakArrow');
+          if (hedgeText) hedgeText.setAttribute('opacity', '0');
+          if (peakArrow) peakArrow.style.opacity = '0';
+          document.querySelector('button').disabled = false;
+      }
+      window.addEventListener('load', () => {
+          setTimeout(window.startAnimation, 1000);
+      });
     }
-    return { points, peakPoint };
-}
-
-function animateCurve() {
-    const curve = document.getElementById('curve');
-    const safeBg = document.getElementById('safeBg');
-    const dangerBg = document.getElementById('dangerBg');
-    const peakStar = document.getElementById('peakStar');
-    const hedgeText = document.getElementById('hedgeText');
-    const peakArrow = document.getElementById('peakArrow');
-    const { points, peakPoint } = generateCurvePoints();
-    safeBg.setAttribute('width', peakPoint.x - 80);
-    dangerBg.setAttribute('x', peakPoint.x);
-    dangerBg.setAttribute('width', 830 - peakPoint.x);
-    const safeLabel = document.getElementById('safeZoneLabel');
-    const dangerLabel = document.getElementById('dangerZoneLabel');
-    const safeX = 80 + (peakPoint.x - 80) / 2;
-    const safeY = 275;
-    safeLabel.setAttribute('x', safeX);
-    safeLabel.setAttribute('y', safeY);
-    const dangerX = peakPoint.x + (830 - peakPoint.x) / 2;
-    const dangerY = 275;
-    dangerLabel.setAttribute('x', dangerX);
-    dangerLabel.setAttribute('y', dangerY);
-    curve.setAttribute('d', '');
-    peakStar.style.opacity = '0';
-    hedgeText.setAttribute('opacity', '0');
-    peakArrow.style.opacity = '0';
-    safeLabel.style.opacity = '0';
-    dangerLabel.style.opacity = '0';
-    let startTime = null;
-    const total = points.length - 1;
-    const duration = 2500;
-    function drawFrame(ts) {
-        if (!isAnimating) return;
-        if (!startTime) startTime = ts;
-        const elapsed = ts - startTime;
-        let t = Math.min(elapsed / duration, 1);
-        const currentPoint = Math.floor(t * total);
-        let pathData = `M ${points[0].x} ${points[0].y}`;
-        for (let i = 1; i <= currentPoint; i++) {
-            pathData += ` L ${points[i].x} ${points[i].y}`;
-        }
-        curve.setAttribute('d', pathData);
-        if (currentPoint > 5) {
-            safeLabel.style.opacity = '1';
-            safeBg.style.opacity = '0.08';
-        }
-        if (currentPoint > peakPoint.index) {
-            dangerLabel.style.opacity = '1';
-            dangerBg.style.opacity = '0.08';
-        }
-        if (currentPoint >= total) {
-            const starPolygon = peakStar.querySelector('polygon');
-            starPolygon.setAttribute('transform', `translate(${peakPoint.x}, ${peakPoint.y})`);
-            setTimeout(() => {
-                peakStar.style.opacity = '1';
-                setTimeout(() => {
-                    hedgeText.setAttribute('opacity', '1');
-                    const arrowPath = document.getElementById('arrowPath');
-                    const startX = 340;
-                    const startY = 40;
-                    const endX = peakPoint.x - 40;
-                    const endY = peakPoint.y - 15;
-                    arrowPath.setAttribute('d', `M ${startX} ${startY} Q ${(startX + endX) / 2 - 60} ${(startY + endY) / 2 + 20} ${endX} ${endY}`);
-                    setTimeout(() => {
-                        peakArrow.style.opacity = '1';
-                    }, 200);
-                }, 400);
-            }, 200);
-            isAnimating = false;
-            return;
-        }
-        animationId = requestAnimationFrame(drawFrame);
-    }
-    isAnimating = true;
-    requestAnimationFrame(drawFrame);
-}
-
-function startAnimation() {
-    if (isAnimating) return;
-    isAnimating = true;
-    document.getElementById('safeBg').style.opacity = '0';
-    document.getElementById('dangerBg').style.opacity = '0';
-    animateCurve();
-}
-
-function resetAnimation() {
-    isAnimating = false;
-    if (animationId) {
-        cancelAnimationFrame(animationId);
-    }
-    document.getElementById('curve').setAttribute('d', '');
-    document.getElementById('safeBg').style.opacity = '0';
-    document.getElementById('dangerBg').style.opacity = '0';
-    document.getElementById('safeZoneLabel').style.opacity = '0';
-    document.getElementById('dangerZoneLabel').style.opacity = '0';
-    document.getElementById('peakStar').style.opacity = '0';
-    document.getElementById('hedgeText').setAttribute('opacity', '0');
-    document.getElementById('peakArrow').style.opacity = '0';
-}
-</script>
+    // Wait for includes to finish, then run bonDemoInit
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(bonDemoInit, 500); // Give time for includes
+    });
+    </script>
 </body>
 </html> 
